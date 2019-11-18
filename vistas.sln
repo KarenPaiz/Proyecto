@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2036
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "vistas", "vistas\vistas.csproj", "{E5FE596E-063C-4F0C-B210-17088CD5F97E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API", "API\API.csproj", "{E6EAE42F-0696-4326-AFD8-640C31E96A66}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E5FE596E-063C-4F0C-B210-17088CD5F97E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E5FE596E-063C-4F0C-B210-17088CD5F97E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E5FE596E-063C-4F0C-B210-17088CD5F97E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E5FE596E-063C-4F0C-B210-17088CD5F97E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E6EAE42F-0696-4326-AFD8-640C31E96A66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E6EAE42F-0696-4326-AFD8-640C31E96A66}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E6EAE42F-0696-4326-AFD8-640C31E96A66}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E6EAE42F-0696-4326-AFD8-640C31E96A66}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D87E5EE2-62E2-4283-B874-C2945FF5EFAD}
+	EndGlobalSection
+EndGlobal
