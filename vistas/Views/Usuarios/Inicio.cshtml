@@ -1,0 +1,27 @@
+﻿
+@{
+    ViewData["Title"] = "Inicio";
+}
+
+<h2>Inicio</h2>
+
+@using (Html.BeginForm("Inicio", "Usuarios", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <h2></h2>
+    <h4>Ingrese su usuario</h4>
+    <input type="text" name="Usuario">
+    <h3></h3>
+
+    <h4>Ingrese su contraseña</h4>
+    <input type="password" name="Password">
+    <h3></h3>
+    <a href="/Usuarios/IngresoU">
+        <input type="submit" value="Ingresar" class="btn btn-default" />
+    </a>
+    
+}
+<h3></h3>
+
+<a href="/Usuarios/IngresoU">
+    <input type="button" value="Ingresar nuevo uuario" />
+</a>

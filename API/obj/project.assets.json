@@ -11620,11 +11620,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Karen\\Desktop\\vistas\\API\\API.csproj",
+      "projectUniqueName": "C:\\Users\\Karen\\Desktop\\RamaInicial\\Proyecto\\API\\API.csproj",
       "projectName": "API",
-      "projectPath": "C:\\Users\\Karen\\Desktop\\vistas\\API\\API.csproj",
+      "projectPath": "C:\\Users\\Karen\\Desktop\\RamaInicial\\Proyecto\\API\\API.csproj",
       "packagesPath": "C:\\Users\\Karen\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Karen\\Desktop\\vistas\\API\\obj\\",
+      "outputPath": "C:\\Users\\Karen\\Desktop\\RamaInicial\\Proyecto\\API\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
