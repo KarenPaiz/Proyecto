@@ -1,0 +1,22 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+namespace API.Models
+{
+    public class MessagesModel
+    {
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string Id { get; set; }
+        public string EmisorMsg { get; set; }
+        public string ReceptorMsg { get; set; }
+        public string Mensaje { get; set; }
+        public string Fecha { get; set; }
+        public bool PoseeArchivo { get; set; }
+        public string NombreArchivo { get; set; }
+
+    }
+}
