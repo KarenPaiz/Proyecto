@@ -17,4 +17,14 @@
     <PackageReference Include="MongoDB.Driver.GridFS" Version="2.9.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Libreria\Libreria.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Librerias">
+      <HintPath>..\Librerias\bin\Debug\Librerias.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>
