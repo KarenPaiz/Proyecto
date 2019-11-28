@@ -362,10 +362,7 @@ namespace Libreria
                 primerCaracter = cadenaAnalizada;
             }
             var texto = decompressed.ToString().ToCharArray();
-            foreach (var item in extensionArchivo)
-            {
-                bytesRegresa.Add(Convert.ToByte(item));
-            }
+            
             foreach (var item in texto)
             {
                 bytesRegresa.Add(Convert.ToByte(item));

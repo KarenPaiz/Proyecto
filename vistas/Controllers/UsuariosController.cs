@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
-//using System.Web.Abstractions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.IO;
@@ -164,7 +163,7 @@ namespace vistas.Controllers
             return RedirectToAction("SalaDeChat");
         }
         public ActionResult SalaDeChat()
-        {           
+        {
             usuarioReceptor = string.Empty;
             var usuarios = new List<UsersModels>();
             using (var client = new HttpClient())
@@ -188,35 +187,42 @@ namespace vistas.Controllers
             return View();
         }
         [HttpPost]
-        public ActionResult Chats(string Mensaje )
+        public ActionResult Chats(string Archivo)
         {
-            
-            var mensajs = new List<MessagesModel>();
-            
-                
+            Directory.CreateDirectory(@"/App_Data/ArchivosDescargas/");
+            if (Archivo != null)
+            {
+                byte[] bytesArchivo;
+                byte[] aEscribir;
                 using (var client = new HttpClient())
                 {
-                    string[] usuariosActivos = { usuarioEnControl, usuarioReceptor };
                     client.BaseAddress = new Uri("http://localhost:59679");
-                    var postJob = client.PostAsJsonAsync<string[]>("api/Chat/GetMsgs", usuariosActivos);
+                    var postJob = client.PostAsJsonAsync<string>("api/Chat/GetFile", Archivo);
                     postJob.Wait();
                     var postResult = postJob.Result;
                     if (postResult.IsSuccessStatusCode)
                     {
-                        var readJob = postResult.Content.ReadAsAsync<List<MessagesModel>>();
+                        var readJob = postResult.Content.ReadAsAsync<byte[]>();
                         readJob.Wait();
-                        mensajs = readJob.Result;
+                        bytesArchivo = readJob.Result;
+                        aEscribir = Libreria.Metodos.LZWDecompress(bytesArchivo);
+                        using (var writestream = new FileStream(@"/App_Data/ArchivosDescargas/" + Archivo,FileMode.OpenOrCreate))
+                        {
+                            using (var writer = new BinaryWriter(writestream))
+                            {
+                                foreach (var item in aEscribir)
+                                {
+                                    writer.Write(item);
+                                }
+                            }
+                        }
+                        var FileVirtualPath = @"/App_Data/ArchivosDescargas/" + Archivo;
+                        return File(FileVirtualPath, "application/force-download", Path.GetFileName(FileVirtualPath));
                     }
                 }
-                
-            
-            ViewBag.Matriz = mensajs.ToArray();
-            return View();
-
-        }
-
-        public ActionResult Chats()
-        {
+               
+                //Escribir a archivo
+            }
             var mensajs = new List<MessagesModel>();
             using (var client = new HttpClient())
             {
@@ -233,13 +239,29 @@ namespace vistas.Controllers
                 }
             }
             ViewBag.Matriz = mensajs.ToArray();
-            //colocar el buscado de mensajes y buscador de archivos para descargar 
-            //para los archivos: si existe solo hacer que se descargue. si no está popup "no existe"
-            //para la busqueda intentar con una partial view sin salirse del chat y mostrar la lista de mensajes con el emisor y la hora. en ultima instancia será una vista normal que regrese a la sala de chat
-            //Para el envio de mensajes y archivos enviar el mensaje y el boton enviar ue haga refresh a la paggina. igual poner un boton abajo para el refresh
-            //para el envio de archivos colocar un boton "seleccionar archivo" para que reciba el archivo y un boton enviar "enviar archivo"
-            //validar que si se da "enviar" y la caja de teto está vacia no enviar nada a Mauricio y solo refrescar la pagina
-            //poner boton para regresar a la sala de chat 
+            return View();
+        }
+        public ActionResult Chats()
+        {
+
+
+            var mensajs = new List<MessagesModel>();
+            using (var client = new HttpClient())
+            {
+                string[] usuariosActivos = { usuarioEnControl, usuarioReceptor };
+                client.BaseAddress = new Uri("http://localhost:59679");
+                var postJob = client.PostAsJsonAsync<string[]>("api/Chat/GetMsgs", usuariosActivos);
+                postJob.Wait();
+                var postResult = postJob.Result;
+                if (postResult.IsSuccessStatusCode)
+                {
+                    var readJob = postResult.Content.ReadAsAsync<List<MessagesModel>>();
+                    readJob.Wait();
+                    mensajs = readJob.Result;
+                }
+            }
+            ViewBag.Matriz = mensajs.ToArray();
+
             return View();
         }
         public ActionResult EnvioMensajes(IFormFile ArchivoImportado, string Mensaje)
@@ -355,39 +377,46 @@ namespace vistas.Controllers
         [HttpPost]
         public ActionResult BusquedaM(string Mensaje)
         {
-            var mensaje = Mensaje;
-            var emisor = usuarioEnControl;
-            var receptor = usuarioReceptor;
-
+            string[] parameters = { usuarioEnControl, usuarioReceptor, Mensaje };
 
             var mensajs = new List<MessagesModel>();
-            var aux = new MessagesModel();
-            aux.EmisorMsg = "tú";
-            aux.Mensaje = "Hola";
-            aux.FechaEnvio = DateTime.Today;
-            mensajs.Add(aux);
-            aux = new MessagesModel();
-            aux.EmisorMsg = "amix";
-            aux.Mensaje = "Hola";
-            aux.FechaEnvio = DateTime.Today;
-            mensajs.Add(aux);
-            aux = new MessagesModel();
-            aux.EmisorMsg = "tú";
-            aux.Mensaje = "todo bien?";
-            aux.FechaEnvio = DateTime.Today;
-            mensajs.Add(aux);
-            aux = new MessagesModel();
-            aux.EmisorMsg = "amix";
-            aux.Mensaje = "todo correto";
-            aux.FechaEnvio = DateTime.Today;
-            mensajs.Add(aux);
 
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("http://localhost:59679");
+                var postJob = client.PostAsJsonAsync<string[]>("api/Chat/GetMsgsParam", parameters);
+                postJob.Wait();
+                var postResult = postJob.Result;
+                if (postResult.IsSuccessStatusCode)
+                {
+                    var readJob = postResult.Content.ReadAsAsync<List<MessagesModel>>();
+                    readJob.Wait();
+                    mensajs = readJob.Result;
+                }
+            }
             ViewBag.Matriz = mensajs.ToArray();
 
             return View();
         }
         public ActionResult BusquedaM()
         {
+            var mensajs = new List<MessagesModel>();
+
+            using (var client = new HttpClient())
+            {
+                string[] usuariosActivos = { usuarioEnControl, usuarioReceptor };
+                client.BaseAddress = new Uri("http://localhost:59679");
+                var postJob = client.PostAsJsonAsync<string[]>("api/Chat/GetMsgs", usuariosActivos);
+                postJob.Wait();
+                var postResult = postJob.Result;
+                if (postResult.IsSuccessStatusCode)
+                {
+                    var readJob = postResult.Content.ReadAsAsync<List<MessagesModel>>();
+                    readJob.Wait();
+                    mensajs = readJob.Result;
+                }
+            }
+            ViewBag.Matriz = mensajs.ToArray();
             return View();
         }
         public ActionResult DescargarArchivos(string nombre)

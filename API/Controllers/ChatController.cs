@@ -47,7 +47,7 @@ namespace API.Controllers
         }
 
         [Route("GetFile")]
-        public ActionResult<List<byte>> GetFile(string FileName)
+        public ActionResult<List<byte>> GetFile([FromBody]string FileName)
         {
             List<byte> archivo = _chatDatabaseService.GetFile(FileName);
             return Ok(archivo);
