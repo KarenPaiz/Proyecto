@@ -74,9 +74,10 @@ namespace API.Controllers
         }
 
         [Route("Login")]
-        public ActionResult<bool> Login(string Usuario, string Password)
+        public ActionResult<bool> Login(string [] UsuarioPassword)
         {
-            var UserDB = _chatDatabaseService.GetUser(Usuario, Password);
+
+            var UserDB = _chatDatabaseService.GetUser(UsuarioPassword[0], UsuarioPassword[1]);
             var x = (UserDB != null) ? true : false;
             return Ok(x);
         }

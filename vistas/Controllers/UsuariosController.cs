@@ -180,15 +180,31 @@ namespace vistas.Controllers
         //[ValidateAntiForgeryToken]
         public ActionResult Inicio(IFormCollection collection, string Usuario, string Password)
         {
-            var usuario = Usuario;
-            var contrasenia = Password;
-            
+            string[] UsuarioPassword = { Usuario, Password };
             //if RECIBO EL VISTO BUENO{
             //GENERAR EL TOKEN
             //DAR EL TOKEN AL USUARIO en forma de archivo y hacerlo descargable TokenUsuario.token. poner un popup que diga:
             //"el archivo que recibio es su llave. no lo modifique. uselo cuando la app se lo solicite"}
             //else {Enviar un popup que diga sorry usuario/password incorrecto}
-
+            var encontrado = false;
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("http://localhost:59679");
+                var postJob = client.PostAsJsonAsync<string[]>("api/Chat/Login", UsuarioPassword);
+                postJob.Wait();
+                var postResult = postJob.Result;
+                if (postResult.IsSuccessStatusCode)
+                {
+                    var readJob = postResult.Content.ReadAsAsync<bool>();
+                    readJob.Wait();
+                    if (readJob.Result)
+                    {
+                        return RedirectToAction("SalaDeChat");
+                    }
+                    return RedirectToAction("Inicio");
+                }
+            }
+            ModelState.AddModelError(string.Empty, "Error");
             return View();
         }
         public ActionResult Inicio()
