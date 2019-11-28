@@ -14,7 +14,8 @@ namespace API.Models
         public string EmisorMsg { get; set; }
         public string ReceptorMsg { get; set; }
         public string Mensaje { get; set; }
-        public string Fecha { get; set; }
+        [BsonDateTimeOptions(Kind = DateTimeKind.Local)]
+        public DateTime FechaEnvio { get; set; }
         public bool PoseeArchivo { get; set; }
         public string NombreArchivo { get; set; }
 

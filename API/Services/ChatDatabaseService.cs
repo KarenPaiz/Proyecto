@@ -15,9 +15,7 @@ namespace API.Services
         private readonly IMongoCollection<UsersModels> _users;
         private readonly IMongoCollection<MessagesModel> _messages;
         private readonly string dbName;
-        private readonly GridFSBucket gridFsBucket;
-
-
+        private readonly GridFSBucket gridFsBucket;        
         public ChatDatabaseService(IChatDatabaseSettings settings)
         {
             var client = new MongoClient(settings.ConnectionString);
@@ -27,7 +25,6 @@ namespace API.Services
             _users = database.GetCollection<UsersModels>(settings.UsersCollectionName);
             _messages = database.GetCollection<MessagesModel>(settings.MessagesCollectionName);
         }
-
         //Obtener la lista de usuarios disponibles
         public List<UsersModels> GetAllUsers() =>
            _users.Find(UsersModels => true).ToList();
@@ -46,26 +43,27 @@ namespace API.Services
             return true;
         }
         //Obtener los mensajes con parametros de receptor y emisor
-        public List<MessagesModel> GetMessages(string emisor, string receptor)
+        public List<MessagesModel> GetMessages(string UserOne, string UserTwo)
         {
-            var listOne=_messages.Find<MessagesModel>(MessagesModel => MessagesModel.EmisorMsg == emisor).ToList();
-            var listTwo = _messages.Find<MessagesModel>(MessagesModel => MessagesModel.EmisorMsg == receptor).ToList();
+            var listOne=_messages.Find<MessagesModel>(MessagesModel => MessagesModel.EmisorMsg == UserOne).ToList();
+            var listTwo = _messages.Find<MessagesModel>(MessagesModel => MessagesModel.EmisorMsg == UserTwo).ToList();
 
             var retornable = new List<MessagesModel>();
             foreach (var item in listOne)
             {
-                if (item.ReceptorMsg==receptor)
+                if (item.ReceptorMsg==UserTwo)
                 {
                     retornable.Add(item);
                 }
             }
             foreach (var item in listTwo)
             {
-                if (item.ReceptorMsg == emisor)
+                if (item.ReceptorMsg == UserOne)
                 {
                     retornable.Add(item);
                 }
             }
+            retornable.Sort((a, b) => b.FechaEnvio.CompareTo(a.FechaEnvio));
             return retornable;
         }
         //Insertar nuevo mensaje a la base de datos
@@ -120,10 +118,10 @@ namespace API.Services
             }
         }
         //Hace la busqueda con los parametros de emisor, receptor y palabra clave
-        public List<MessagesModel> GetMessagesParam(string emisor, string receptor, string PalabraClave)
+        public List<MessagesModel> GetMessagesParam(string UserOne, string UserTwo, string PalabraClave)
         {
             
-            var listaMensajes = GetMessages(emisor,receptor);
+            var listaMensajes = GetMessages(UserOne,UserTwo);
             var listaParametro = new List<MessagesModel>();
             foreach (var item in listaMensajes)
             {
@@ -132,13 +130,8 @@ namespace API.Services
                     listaParametro.Add(item);
                 }
             }
-           
+            listaParametro.Sort((a, b) => b.FechaEnvio.CompareTo(a.FechaEnvio));
             return listaParametro;
-        }
-        //Obtiene mensaje especifico
-        public MessagesModel GetMessage(string id)
-        {
-           return _messages.Find<MessagesModel>(MessagesModel => MessagesModel.Id == id).FirstOrDefault();
         }
         public UsersModels GetUser(string Usuario, string password)
         {

@@ -33,16 +33,16 @@ namespace API.Controllers
         }
 
         [Route("GetMsgs")]
-        public ActionResult<List<MessagesModel>> GetMsgs(string Emisor, string Receptor)
+        public ActionResult<List<MessagesModel>> GetMsgs(string UserOne, string UserTwo)
         {
-            var listaMensajes = _chatDatabaseService.GetMessages(Emisor, Receptor);
+            var listaMensajes = _chatDatabaseService.GetMessages(UserOne, UserTwo);
             return listaMensajes;
         }
 
-        [Route("GetMsgParam")]
-        public ActionResult<List<MessagesModel>> GetMsgParam(string Emisor, string Receptor, string Parameter)
+        [Route("GetMsgsParam")]
+        public ActionResult<List<MessagesModel>> GetMsgsParam(string UsuarioUno, string UsuarioDos, string Parameter)
         {
-            var listaMensajes = _chatDatabaseService.GetMessagesParam(Emisor, Receptor, Parameter);
+            var listaMensajes = _chatDatabaseService.GetMessagesParam(UsuarioUno, UsuarioDos, Parameter);
             return listaMensajes;
         }
 
@@ -67,6 +67,8 @@ namespace API.Controllers
         [Route("SendMessage")]
         public ActionResult<UsersModels> PostMsg(MessagesModel Message)
         {
+            var start = DateTime.Now;
+            Message.FechaEnvio = start;
             var source = new byte[5]; source[0] = 34; source[1] = 202; source[2] = 104; source[3] = 37; source[4] = 23;
             var fileName = "LaJuana.txt";
             _chatDatabaseService.CreateMessage(Message, source, fileName);
