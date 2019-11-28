@@ -28,8 +28,7 @@
     <div class="input-group">
         @using (Html.BeginForm("Chats", "Usuarios", FormMethod.Post, new { enctype = "multipart/form-data" }))
         {
-
-            <input type="file" name="archivoAEnviar">
+            <input type="file" name="ArchivoImportado">
             <input type="submit" value="Enviar" class="btn btn-default" />
         }
     </div>

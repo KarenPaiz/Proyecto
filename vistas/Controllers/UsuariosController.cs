@@ -12,7 +12,8 @@ namespace vistas.Controllers
 {
     public class UsuariosController : Controller
     {
-        // GET: Usuarios
+        static string usuarioEnControl;
+            // GET: Usuarios
         public ActionResult Index()
         {
             return View();
@@ -184,8 +185,21 @@ namespace vistas.Controllers
             
             return View();
         }
-        public ActionResult Chats()
+        public ActionResult Chats(string Mensaje, HttpPostedFileBase ArchivoImportado)
         {
+            if (Mensaje!=null)
+            {
+                var mensaje = Mensaje;
+                var hora = DateTime.Now;
+                var emisor = usuarioEnControl;
+
+            }
+            else if(ArchivoImportado!=null)
+            {
+
+            }
+            
+            
             var mensajs = new List<Mensajes>();
             var aux = new Mensajes();
             aux.emisor = "tú";
