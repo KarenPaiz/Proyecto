@@ -1,0 +1,6 @@
+C:\Users\Karen\Desktop\RamaInicial\Proyecto\Libreria\bin\Debug\Libreria.dll
+C:\Users\Karen\Desktop\RamaInicial\Proyecto\Libreria\bin\Debug\Libreria.pdb
+C:\Users\Karen\Desktop\RamaInicial\Proyecto\Libreria\obj\Debug\Libreria.csprojAssemblyReference.cache
+C:\Users\Karen\Desktop\RamaInicial\Proyecto\Libreria\obj\Debug\Libreria.csproj.CoreCompileInputs.cache
+C:\Users\Karen\Desktop\RamaInicial\Proyecto\Libreria\obj\Debug\Libreria.dll
+C:\Users\Karen\Desktop\RamaInicial\Proyecto\Libreria\obj\Debug\Libreria.pdb

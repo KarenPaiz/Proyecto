@@ -1,0 +1,38 @@
+﻿
+@{
+    ViewData["Title"] = "Chats";
+}
+
+<h2>Chats</h2>
+<table style="width:100%">
+
+    <tr>
+        <th>Mensajes</th>
+
+    </tr>
+    @foreach (var item in ViewBag.Matriz)
+    {
+        <tr>
+            <td>@item.emisor:  @item.mensaje       -@item.hora</td>
+        </tr>
+    }
+    <h2></h2>
+    <div class="input-group">
+        @using (Html.BeginForm("Chats", "Usuarios", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+
+            <input type="text" name="Mensaje">
+            <input type="submit" value="Enviar" class="btn btn-default" />
+        }
+    </div>
+    <div class="input-group">
+        @using (Html.BeginForm("Chats", "Usuarios", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+
+            <input type="file" name="archivoAEnviar">
+            <input type="submit" value="Enviar" class="btn btn-default" />
+        }
+    </div>
+
+
+</table>

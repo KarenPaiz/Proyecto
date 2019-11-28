@@ -33,3 +33,6 @@ C:\Users\Karen\Desktop\RamaInicial\Proyecto\vistas\obj\Debug\netcoreapp2.1\vista
 C:\Users\Karen\Desktop\RamaInicial\Proyecto\vistas\obj\Debug\netcoreapp2.1\Razor\Views\Usuarios\IngresoU.g.cshtml.cs
 C:\Users\Karen\Desktop\RamaInicial\Proyecto\vistas\obj\Debug\netcoreapp2.1\Razor\Views\Usuarios\Inicio.g.cshtml.cs
 C:\Users\Karen\Desktop\RamaInicial\Proyecto\vistas\obj\Debug\netcoreapp2.1\Razor\Views\Usuarios\SalaDeChat.g.cshtml.cs
+C:\Users\Karen\Desktop\RamaInicial\Proyecto\vistas\bin\Debug\netcoreapp2.1\Libreria.dll
+C:\Users\Karen\Desktop\RamaInicial\Proyecto\vistas\bin\Debug\netcoreapp2.1\Libreria.pdb
+C:\Users\Karen\Desktop\RamaInicial\Proyecto\vistas\obj\Debug\netcoreapp2.1\Razor\Views\Usuarios\Chats.g.cshtml.cs

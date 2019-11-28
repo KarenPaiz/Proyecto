@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.IO;
+using vistas.Models;
 
 
 namespace vistas.Controllers
@@ -16,19 +17,16 @@ namespace vistas.Controllers
         {
             return View();
         }
-
         // GET: Usuarios/Details/5
         public ActionResult Details(int id)
         {
             return View();
         }
-
         // GET: Usuarios/Create
         public ActionResult Create()
         {
             return View();
         }
-
         // POST: Usuarios/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -45,13 +43,11 @@ namespace vistas.Controllers
                 return View();
             }
         }
-
         // GET: Usuarios/Edit/5
         public ActionResult Edit(int id)
         {
             return View();
         }
-
         // POST: Usuarios/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -68,13 +64,11 @@ namespace vistas.Controllers
                 return View();
             }
         }
-
         // GET: Usuarios/Delete/5
         public ActionResult Delete(int id)
         {
             return View();
         }
-
         // POST: Usuarios/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -91,19 +85,17 @@ namespace vistas.Controllers
                 return View();
             }
         }
-
         public ActionResult IngresoU()
         {
             return View();
         }
-
         [HttpPost]
         //[ValidateAntiForgeryToken]
         public ActionResult IngresoU (IFormCollection collection, string Usuario, string Nombre, string Password)
         {
             var nombreUsuario = Nombre;
             var usuario = Usuario;
-            var contrasenia = Password;
+            var contrasenia = string.Empty;
             Random rnd = new Random();
             int aNumber = rnd.Next(1, 100);
             List<int> numbers = new List<int>();
@@ -145,7 +137,19 @@ namespace vistas.Controllers
                     escritura.WriteLine(aNumber);
                 }
             }
-            //CIFRAR CONTRASENIA CON aNumber
+            var byteContrasenia = new List<byte>();
+            foreach (var item in Password)
+            {
+                byteContrasenia.Add(Convert.ToByte(Convert.ToChar(item)));
+            }
+            byte[]contrasenia1 = Libreria.Metodos.EncryptionZigZag(byteContrasenia.ToArray(),aNumber);
+
+            foreach (var item in contrasenia1)
+            {
+                contrasenia += Convert.ToChar(item).ToString();
+            }
+            
+            
             //ENVIAR DATOS A MAURICIO
             //ENVIAR AL USUARIO A LA PAGINA DE INICIO
            
@@ -173,6 +177,7 @@ namespace vistas.Controllers
         }
         public ActionResult SalaDeChat()
         {
+
             //Recibir la lista de usuarios y generar una ista que uestre todos los usuarios. 
             //Poner un buscador para buscar el nombre del usuario con el que se desea tener una conversacion y un boton que envie esa info a la dattabase
             //mandarlo a la vista TOKEN
@@ -181,6 +186,29 @@ namespace vistas.Controllers
         }
         public ActionResult Chats()
         {
+            var mensajs = new List<Mensajes>();
+            var aux = new Mensajes();
+            aux.emisor = "tú";
+            aux.mensaje = "Hola";
+            aux.hora = "12:00";
+            mensajs.Add(aux);
+           aux = new Mensajes();
+            aux.emisor = "amix";
+            aux.mensaje = "Hola";
+            aux.hora = "12:10";
+            mensajs.Add(aux);
+            aux = new Mensajes();
+            aux.emisor = "tú";
+            aux.mensaje = "todo bien?";
+            aux.hora = "12:20";
+            mensajs.Add(aux);
+            aux = new Mensajes();
+            aux.emisor = "amix";
+            aux.mensaje = "todo correto";
+            aux.hora = "12:30";
+            mensajs.Add(aux);
+
+            ViewBag.Matriz = mensajs.ToArray();
             //envia el nombre del usuario con el que desea hablar y recibe Mauricio los mensajes de los usuarios
             //con esta info recibida mostrar los mensajes de los usarios coronologicamente, el nombre del uuario con el que se está charlando 
             //colocar el buscado de mensajes y buscador de archivos para descargar 
