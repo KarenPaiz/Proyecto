@@ -17,84 +17,10 @@ namespace vistas.Controllers
         static string usuarioEnControl;
         static string usuarioReceptor;
         static string usuarioTry;
-        // GET: Usuarios
-        public ActionResult Index()
-        {
-            return View();
-        }
-        // GET: Usuarios/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
-        // GET: Usuarios/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-        // POST: Usuarios/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
-        {
-            try
-            {
-                // TODO: Add insert logic here
-
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-        // GET: Usuarios/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-        // POST: Usuarios/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                // TODO: Add update logic here
-
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-        // GET: Usuarios/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-        // POST: Usuarios/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                // TODO: Add delete logic here
-
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
         public ActionResult IngresoU()
         {
             return View();
         }
-
         [HttpPost]
         //[ValidateAntiForgeryToken]
         public ActionResult IngresoU(IFormCollection collection, string Usuario, string Nombre, string Password)
@@ -211,8 +137,34 @@ namespace vistas.Controllers
         {
             return View();
         }
-        public ActionResult SalaDeChat()
+        [HttpPost]
+        public ActionResult SalaDeChat(string usuarioBusqueda)
         {
+            if (usuarioBusqueda != null)
+            {
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri("http://localhost:59679");
+                    var postJob = client.PostAsJsonAsync("api/Chat/ValidateUser", usuarioBusqueda);
+                    postJob.Wait();
+                    var postResult = postJob.Result;
+                    if (postResult.IsSuccessStatusCode)
+                    {
+                        var readJob = postResult.Content.ReadAsAsync<bool>();
+                        readJob.Wait();
+                        if (readJob.Result)
+                        {
+                            usuarioReceptor = usuarioBusqueda;
+                            return RedirectToAction("Chats");
+                        }
+                        return RedirectToAction("SalaDeChat");
+                    }
+                }
+            }
+            return RedirectToAction("SalaDeChat");
+        }
+        public ActionResult SalaDeChat()
+        {           
             usuarioReceptor = string.Empty;
             var usuarios = new List<UsersModels>();
             using (var client = new HttpClient())
@@ -223,7 +175,7 @@ namespace vistas.Controllers
                 var postResult = postJob.Result;
                 if (postResult.IsSuccessStatusCode)
                 {
-                    var readJob = postResult.Content.ReadAsAsync <List<UsersModels>>();
+                    var readJob = postResult.Content.ReadAsAsync<List<UsersModels>>();
                     readJob.Wait();
                     usuarios = readJob.Result;
                 }
@@ -235,7 +187,6 @@ namespace vistas.Controllers
             ViewBag.Matriz = usuarios.ToArray();
             return View();
         }
-
         public ActionResult Chats(IFormFile ArchivoImportado, string Mensaje)
         {
             if (Mensaje != null && ArchivoImportado != null)
@@ -318,7 +269,7 @@ namespace vistas.Controllers
 
             return View();
         }
-        public ActionResult Tokens(string usuario,IFormFile ArchivoToken)
+        public ActionResult Tokens(string usuario, IFormFile ArchivoToken)
         {
             if (ArchivoToken == null && usuario == null)
             {
@@ -337,7 +288,7 @@ namespace vistas.Controllers
                 else
                 {
                     //error
-                    
+
                 }
             }
             //pide al usuario que envie un archivo de tipo .token y validarlo con el usuario
@@ -380,7 +331,7 @@ namespace vistas.Controllers
             return View();
         }
         public ActionResult BusquedaM()
-        { 
+        {
             return View();
         }
         public ActionResult DescargarArchivos(string nombre)
@@ -391,9 +342,6 @@ namespace vistas.Controllers
             return View();
         }
 
-
-
-
     }
-        
+
 }

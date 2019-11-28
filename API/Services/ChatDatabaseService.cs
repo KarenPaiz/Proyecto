@@ -146,5 +146,9 @@ namespace API.Services
             }
             return null;
         }
+        public UsersModels ValidateUser(string Usuario)
+        {
+            return _users.Find(UsersModels => UsersModels.Usuario == Usuario).FirstOrDefault();            
+        }
     }
 }

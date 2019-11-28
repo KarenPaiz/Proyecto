@@ -76,8 +76,14 @@ namespace API.Controllers
         [Route("Login")]
         public ActionResult<bool> Login(string [] UsuarioPassword)
         {
-
             var UserDB = _chatDatabaseService.GetUser(UsuarioPassword[0], UsuarioPassword[1]);
+            var x = (UserDB != null) ? true : false;
+            return Ok(x);
+        }
+        [Route("ValidateUser")]
+        public ActionResult<bool> ValidateUser([FromBody]string usuarioBusqueda)
+        {
+            var UserDB = _chatDatabaseService.ValidateUser(usuarioBusqueda);
             var x = (UserDB != null) ? true : false;
             return Ok(x);
         }
