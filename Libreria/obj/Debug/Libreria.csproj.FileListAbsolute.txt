@@ -102,3 +102,8 @@ C:\Users\Karen\Desktop\RamaInicial\Proyecto\Libreria\bin\Debug\System.Xml.XPath.
 C:\Users\Karen\Desktop\RamaInicial\Proyecto\Libreria\bin\Debug\System.Runtime.Numerics.dll
 C:\Users\Karen\Desktop\RamaInicial\Proyecto\Libreria\bin\Debug\System.Runtime.Numerics.xml
 C:\Users\Karen\Desktop\RamaInicial\Proyecto\Libreria\obj\Debug\Libreria.csproj.CopyComplete
+C:\Users\Allan Dávila\Documents\GitHub\Proyecto\Libreria\obj\Debug\Libreria.csprojAssemblyReference.cache
+C:\Users\Allan Dávila\Documents\GitHub\Proyecto\Libreria\obj\Debug\Libreria.dll
+C:\Users\Allan Dávila\Documents\GitHub\Proyecto\Libreria\obj\Debug\Libreria.pdb
+C:\Users\Allan Dávila\Documents\GitHub\Proyecto\Libreria\bin\Debug\Libreria.dll
+C:\Users\Allan Dávila\Documents\GitHub\Proyecto\Libreria\bin\Debug\Libreria.pdb

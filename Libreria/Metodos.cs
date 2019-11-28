@@ -307,7 +307,7 @@ namespace Libreria
                 CaracterDiccionario = Convert.ToChar(TextoComprimido[contLec]);
                 contLec++;
             }
-            extensionArchivo =  extensionArchivo+".";
+            extensionArchivo = extensionArchivo + ".";
             var byteAnalizado = string.Empty;
             var listaCaracteresComprimidos = new List<int>();
             while (contLec != TextoComprimido.Length && listaCaracteresComprimidos.Count < Convert.ToInt32(CantidadTexto))
@@ -373,20 +373,20 @@ namespace Libreria
             return bytesRegresa.ToArray();
         }
 
-        public static BigInteger DiffieHelmannAlgorithm(int numberA, int numberB)
-   {
-       BigInteger numberG = 11;
-       BigInteger numberP = 33;
-       BigInteger numberFromA = BigInteger.ModPow(numberG, (numberA), numberP);
-       BigInteger numberFromB = BigInteger.ModPow(numberG, (numberB), numberP);
-       BigInteger SecretKeyFromA = BigInteger.ModPow(numberFromB, (numberA), numberP);
-       BigInteger SecretKeyFromB = BigInteger.ModPow(numberFromA, (numberB), numberP);
-       if (SecretKeyFromA == SecretKeyFromB)
-       {
-           return SecretKeyFromA;
-       }
-       return 0;
-   }
-   
+        public static System.Numerics.BigInteger DiffieHelmannAlgorithm(int numberA, int numberB)
+        {
+            BigInteger numberG = 11;
+            BigInteger numberP = 33;
+            BigInteger numberFromA = BigInteger.ModPow(numberG, (numberA), numberP);
+            BigInteger numberFromB = BigInteger.ModPow(numberG, (numberB), numberP);
+            BigInteger SecretKeyFromA = BigInteger.ModPow(numberFromB, (numberA), numberP);
+            BigInteger SecretKeyFromB = BigInteger.ModPow(numberFromA, (numberB), numberP);
+            if (SecretKeyFromA == SecretKeyFromB)
+            {
+                return SecretKeyFromA;
+            }
+            return 0;
+        }
+
     }
 }

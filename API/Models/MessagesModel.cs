@@ -18,6 +18,7 @@ namespace API.Models
         public DateTime FechaEnvio { get; set; }
         public bool PoseeArchivo { get; set; }
         public string NombreArchivo { get; set; }
-
+        public byte[] Archivo { get; set; }
+               
     }
 }

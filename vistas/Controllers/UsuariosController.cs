@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.IO;
 using vistas.Models;
-
+using System.Net.Http;
 
 namespace vistas.Controllers
 {
@@ -154,13 +154,27 @@ namespace vistas.Controllers
             {
                 contrasenia += Convert.ToChar(item).ToString();
             }
-
+            var usuarioNuevo = new UsersModels();
+            usuarioNuevo.IDDH = aNumber;
+            usuarioNuevo.Nombre = Nombre;
+            usuarioNuevo.Password = contrasenia;
+            usuarioNuevo.Usuario = Usuario;
 
             //ENVIAR DATOS A MAURICIO
             //ENVIAR AL USUARIO A LA PAGINA DE INICIO
-
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("http://localhost:59679");
+                var postJob = client.PostAsJsonAsync<UsersModels>("api/Chat/CreateUser", usuarioNuevo);
+                postJob.Wait();
+                var postResult = postJob.Result;
+                if (postResult.IsSuccessStatusCode)
+                {
+                    return RedirectToAction("Inicio");
+                }
+            }
+            ModelState.AddModelError(string.Empty, "Error");
             return View();
-
         }
         [HttpPost]
         //[ValidateAntiForgeryToken]
@@ -168,7 +182,7 @@ namespace vistas.Controllers
         {
             var usuario = Usuario;
             var contrasenia = Password;
-
+            
             //if RECIBO EL VISTO BUENO{
             //GENERAR EL TOKEN
             //DAR EL TOKEN AL USUARIO en forma de archivo y hacerlo descargable TokenUsuario.token. poner un popup que diga:

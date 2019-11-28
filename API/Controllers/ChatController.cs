@@ -29,28 +29,28 @@ namespace API.Controllers
         [Route("GetUsers")]
         public ActionResult<List<UsersModels>> GetUsers()
         {
-            return _chatDatabaseService.GetAllUsers();
+            return Ok(_chatDatabaseService.GetAllUsers());
         }
 
         [Route("GetMsgs")]
         public ActionResult<List<MessagesModel>> GetMsgs(string UserOne, string UserTwo)
         {
             var listaMensajes = _chatDatabaseService.GetMessages(UserOne, UserTwo);
-            return listaMensajes;
+            return Ok(listaMensajes);
         }
 
         [Route("GetMsgsParam")]
         public ActionResult<List<MessagesModel>> GetMsgsParam(string UsuarioUno, string UsuarioDos, string Parameter)
         {
             var listaMensajes = _chatDatabaseService.GetMessagesParam(UsuarioUno, UsuarioDos, Parameter);
-            return listaMensajes;
+            return Ok(listaMensajes);
         }
 
         [Route("GetFile")]
-        public List<byte> GetFile(string FileName)
+        public ActionResult<List<byte>> GetFile(string FileName)
         {
             List<byte> archivo = _chatDatabaseService.GetFile(FileName);
-            return archivo;
+            return Ok(archivo);
         }
 
         [Route("CreateUser")]
@@ -65,20 +65,20 @@ namespace API.Controllers
         }
 
         [Route("SendMessage")]
-        public ActionResult<UsersModels> PostMsg(MessagesModel Message,string fileName,byte[] source)
+        public ActionResult<UsersModels> PostMsg(MessagesModel Message)
         {
             var start = DateTime.Now;
             Message.FechaEnvio = start;
-            _chatDatabaseService.CreateMessage(Message, source, fileName);
+            _chatDatabaseService.CreateMessage(Message,Message.Archivo , Message.NombreArchivo);
             return Ok();
         }
 
         [Route("Login")]
-        public bool Login(string Usuario, string Password)
+        public ActionResult<bool> Login(string Usuario, string Password)
         {
             var UserDB = _chatDatabaseService.GetUser(Usuario, Password);
             var x = (UserDB != null) ? true : false;
-            return x;
+            return Ok(x);
         }
     }
 }

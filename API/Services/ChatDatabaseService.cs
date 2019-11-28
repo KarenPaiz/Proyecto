@@ -69,6 +69,7 @@ namespace API.Services
         //Insertar nuevo mensaje a la base de datos
         public void CreateMessage(MessagesModel Mensaje, byte[] source, string fileName)
         {
+            Mensaje.Archivo = null;
             var NombreArchivo = fileName;
             if (Mensaje.PoseeArchivo)
             {
