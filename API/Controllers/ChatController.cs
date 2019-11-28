@@ -33,16 +33,16 @@ namespace API.Controllers
         }
 
         [Route("GetMsgs")]
-        public ActionResult<List<MessagesModel>> GetMsgs(string UserOne, string UserTwo)
+        public ActionResult<List<MessagesModel>> GetMsgs(string[]Users)
         {
-            var listaMensajes = _chatDatabaseService.GetMessages(UserOne, UserTwo);
+            var listaMensajes = _chatDatabaseService.GetMessages(Users[0],Users[1]);
             return Ok(listaMensajes);
         }
 
         [Route("GetMsgsParam")]
-        public ActionResult<List<MessagesModel>> GetMsgsParam(string UsuarioUno, string UsuarioDos, string Parameter)
+        public ActionResult<List<MessagesModel>> GetMsgsParam(string[] parameters)
         {
-            var listaMensajes = _chatDatabaseService.GetMessagesParam(UsuarioUno, UsuarioDos, Parameter);
+            var listaMensajes = _chatDatabaseService.GetMessagesParam(parameters[0],parameters[1],parameters[2]);
             return Ok(listaMensajes);
         }
 

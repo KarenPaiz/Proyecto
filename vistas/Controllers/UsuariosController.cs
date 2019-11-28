@@ -187,78 +187,52 @@ namespace vistas.Controllers
             ViewBag.Matriz = usuarios.ToArray();
             return View();
         }
-        public ActionResult Chats(IFormFile ArchivoImportado, string Mensaje)
+        [HttpPost]
+        public ActionResult Chats(string Mensaje )
         {
-            if (Mensaje != null && ArchivoImportado != null)
-            {
-                var mensaje = Mensaje;
-                var hora = DateTime.Now;
-                var emisor = usuarioEnControl;
-                var receptor = usuarioReceptor;
-                var bytesArchivo = new List<byte>();
-                using (var Lectura = new BinaryReader(ArchivoImportado.OpenReadStream()))
-                {
-                    while (Lectura.BaseStream.Position != Lectura.BaseStream.Length)
-                    {
-                        bytesArchivo.Add(Lectura.ReadByte());
-                    }
-                }
-                byte[] archivo = Libreria.Metodos.LZWCompress(bytesArchivo.ToArray(), ArchivoImportado.FileName);
-                var nombreArchivo = ArchivoImportado.FileName;
-
-            }
-            else if (ArchivoImportado == null && Mensaje != null)
-            {
-                var hora = DateTime.Now;
-                var emisor = usuarioEnControl;
-                var receptor = usuarioReceptor;
-                var bytesArchivo = new List<byte>();
-                using (var Lectura = new BinaryReader(ArchivoImportado.OpenReadStream()))
-                {
-                    while (Lectura.BaseStream.Position != Lectura.BaseStream.Length)
-                    {
-                        bytesArchivo.Add(Lectura.ReadByte());
-                    }
-                }
-                byte[] archivo = Libreria.Metodos.LZWCompress(bytesArchivo.ToArray(), ArchivoImportado.FileName);
-                var nombreArchivo = ArchivoImportado.FileName;
-            }
-            else if (ArchivoImportado != null && Mensaje == null)
-            {
-                var mensaje = Mensaje;
-                var hora = DateTime.Now;
-                var emisor = usuarioEnControl;
-                var receptor = usuarioReceptor;
-            }
-            else
-            {
-            }
-
+            
             var mensajs = new List<MessagesModel>();
-            var aux = new MessagesModel();
-            aux.EmisorMsg = "tú";
-            aux.Mensaje = "Hola";
-            aux.FechaEnvio = DateTime.Today;
-            mensajs.Add(aux);
-            aux = new MessagesModel();
-            aux.EmisorMsg = "amix";
-            aux.Mensaje = "Hola";
-            aux.FechaEnvio = DateTime.Today;
-            mensajs.Add(aux);
-            aux = new MessagesModel();
-            aux.EmisorMsg = "tú";
-            aux.Mensaje = "todo bien?";
-            aux.FechaEnvio = DateTime.Today;
-            mensajs.Add(aux);
-            aux = new MessagesModel();
-            aux.EmisorMsg = "amix";
-            aux.Mensaje = "todo correto";
-            aux.FechaEnvio = DateTime.Today;
-            mensajs.Add(aux);
-
+            
+                
+                using (var client = new HttpClient())
+                {
+                    string[] usuariosActivos = { usuarioEnControl, usuarioReceptor };
+                    client.BaseAddress = new Uri("http://localhost:59679");
+                    var postJob = client.PostAsJsonAsync<string[]>("api/Chat/GetMsgs", usuariosActivos);
+                    postJob.Wait();
+                    var postResult = postJob.Result;
+                    if (postResult.IsSuccessStatusCode)
+                    {
+                        var readJob = postResult.Content.ReadAsAsync<List<MessagesModel>>();
+                        readJob.Wait();
+                        mensajs = readJob.Result;
+                    }
+                }
+                
+            
             ViewBag.Matriz = mensajs.ToArray();
+            return View();
 
+        }
 
+        public ActionResult Chats()
+        {
+            var mensajs = new List<MessagesModel>();
+            using (var client = new HttpClient())
+            {
+                string[] usuariosActivos = { usuarioEnControl, usuarioReceptor };
+                client.BaseAddress = new Uri("http://localhost:59679");
+                var postJob = client.PostAsJsonAsync<string[]>("api/Chat/GetMsgs", usuariosActivos);
+                postJob.Wait();
+                var postResult = postJob.Result;
+                if (postResult.IsSuccessStatusCode)
+                {
+                    var readJob = postResult.Content.ReadAsAsync<List<MessagesModel>>();
+                    readJob.Wait();
+                    mensajs = readJob.Result;
+                }
+            }
+            ViewBag.Matriz = mensajs.ToArray();
             //colocar el buscado de mensajes y buscador de archivos para descargar 
             //para los archivos: si existe solo hacer que se descargue. si no está popup "no existe"
             //para la busqueda intentar con una partial view sin salirse del chat y mostrar la lista de mensajes con el emisor y la hora. en ultima instancia será una vista normal que regrese a la sala de chat
@@ -266,6 +240,88 @@ namespace vistas.Controllers
             //para el envio de archivos colocar un boton "seleccionar archivo" para que reciba el archivo y un boton enviar "enviar archivo"
             //validar que si se da "enviar" y la caja de teto está vacia no enviar nada a Mauricio y solo refrescar la pagina
             //poner boton para regresar a la sala de chat 
+            return View();
+        }
+        public ActionResult EnvioMensajes(IFormFile ArchivoImportado, string Mensaje)
+        {
+            var ObjetoMensaje = new MessagesModel();
+            if (Mensaje != null && ArchivoImportado != null)
+            {
+                ObjetoMensaje.Mensaje = Mensaje;
+                ObjetoMensaje.FechaEnvio = DateTime.Now;
+                ObjetoMensaje.EmisorMsg = usuarioEnControl;
+                ObjetoMensaje.ReceptorMsg = usuarioReceptor;
+                var bytesArchivo = new List<byte>();
+                using (var Lectura = new BinaryReader(ArchivoImportado.OpenReadStream()))
+                {
+                    while (Lectura.BaseStream.Position != Lectura.BaseStream.Length)
+                    {
+                        bytesArchivo.Add(Lectura.ReadByte());
+                    }
+                }
+                ObjetoMensaje.Archivo = Libreria.Metodos.LZWCompress(bytesArchivo.ToArray(), ArchivoImportado.FileName);
+                ObjetoMensaje.NombreArchivo = ArchivoImportado.FileName;
+                ObjetoMensaje.PoseeArchivo = true;
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri("http://localhost:59679");
+                    var postJob = client.PostAsJsonAsync<MessagesModel>("api/Chat/SendMessage", ObjetoMensaje);
+                    postJob.Wait();
+                    var postResult = postJob.Result;
+                    if (postResult.IsSuccessStatusCode)
+                    {
+                        return RedirectToAction("Chats");
+                    }
+                }
+            }
+            else if (ArchivoImportado != null && Mensaje == null)
+            {
+                ObjetoMensaje.Mensaje = " ";
+                ObjetoMensaje.FechaEnvio = DateTime.Now;
+                ObjetoMensaje.EmisorMsg = usuarioEnControl;
+                ObjetoMensaje.ReceptorMsg = usuarioReceptor;
+                var bytesArchivo = new List<byte>();
+                using (var Lectura = new BinaryReader(ArchivoImportado.OpenReadStream()))
+                {
+                    while (Lectura.BaseStream.Position != Lectura.BaseStream.Length)
+                    {
+                        bytesArchivo.Add(Lectura.ReadByte());
+                    }
+                }
+                ObjetoMensaje.Archivo = Libreria.Metodos.LZWCompress(bytesArchivo.ToArray(), ArchivoImportado.FileName);
+                ObjetoMensaje.NombreArchivo = ArchivoImportado.FileName;
+                ObjetoMensaje.PoseeArchivo = true;
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri("http://localhost:59679");
+                    var postJob = client.PostAsJsonAsync<MessagesModel>("api/Chat/SendMessage", ObjetoMensaje);
+                    postJob.Wait();
+                    var postResult = postJob.Result;
+                    if (postResult.IsSuccessStatusCode)
+                    {
+                        return RedirectToAction("Chats");
+                    }
+                }
+            }
+            else if (ArchivoImportado == null && Mensaje != null)
+            {
+                ObjetoMensaje.Mensaje = Mensaje;
+                ObjetoMensaje.FechaEnvio = DateTime.Now;
+                ObjetoMensaje.EmisorMsg = usuarioEnControl;
+                ObjetoMensaje.ReceptorMsg = usuarioReceptor;
+                ObjetoMensaje.PoseeArchivo = false;
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri("http://localhost:59679");
+                    var postJob = client.PostAsJsonAsync<MessagesModel>("api/Chat/SendMessage", ObjetoMensaje);
+                    postJob.Wait();
+                    var postResult = postJob.Result;
+                    if (postResult.IsSuccessStatusCode)
+                    {
+                        return RedirectToAction("Chats");
+                    }
+                }
+            }
 
             return View();
         }
