@@ -65,12 +65,10 @@ namespace API.Controllers
         }
 
         [Route("SendMessage")]
-        public ActionResult<UsersModels> PostMsg(MessagesModel Message)
+        public ActionResult<UsersModels> PostMsg(MessagesModel Message,string fileName,byte[] source)
         {
             var start = DateTime.Now;
             Message.FechaEnvio = start;
-            var source = new byte[5]; source[0] = 34; source[1] = 202; source[2] = 104; source[3] = 37; source[4] = 23;
-            var fileName = "LaJuana.txt";
             _chatDatabaseService.CreateMessage(Message, source, fileName);
             return Ok();
         }
