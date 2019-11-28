@@ -148,6 +148,7 @@ namespace vistas.Controllers
             //CIFRAR CONTRASENIA CON aNumber
             //ENVIAR DATOS A MAURICIO
             //ENVIAR AL USUARIO A LA PAGINA DE INICIO
+           
             return View();
             
         }
