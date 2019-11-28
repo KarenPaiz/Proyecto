@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
+//using System.Web.Abstractions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.IO;
@@ -13,7 +15,9 @@ namespace vistas.Controllers
     public class UsuariosController : Controller
     {
         static string usuarioEnControl;
-            // GET: Usuarios
+        static string usuarioReceptor;
+        static string usuarioTry;
+        // GET: Usuarios
         public ActionResult Index()
         {
             return View();
@@ -90,9 +94,10 @@ namespace vistas.Controllers
         {
             return View();
         }
+
         [HttpPost]
         //[ValidateAntiForgeryToken]
-        public ActionResult IngresoU (IFormCollection collection, string Usuario, string Nombre, string Password)
+        public ActionResult IngresoU(IFormCollection collection, string Usuario, string Nombre, string Password)
         {
             var nombreUsuario = Nombre;
             var usuario = Usuario;
@@ -143,34 +148,34 @@ namespace vistas.Controllers
             {
                 byteContrasenia.Add(Convert.ToByte(Convert.ToChar(item)));
             }
-            byte[]contrasenia1 = Libreria.Metodos.EncryptionZigZag(byteContrasenia.ToArray(),aNumber);
+            byte[] contrasenia1 = Libreria.Metodos.EncryptionZigZag(byteContrasenia.ToArray(), aNumber);
 
             foreach (var item in contrasenia1)
             {
                 contrasenia += Convert.ToChar(item).ToString();
             }
-            
-            
+
+
             //ENVIAR DATOS A MAURICIO
             //ENVIAR AL USUARIO A LA PAGINA DE INICIO
-           
+
             return View();
-            
+
         }
         [HttpPost]
         //[ValidateAntiForgeryToken]
-        public ActionResult Inicio(IFormCollection collection, string Usuario,  string Password)
-        {            
+        public ActionResult Inicio(IFormCollection collection, string Usuario, string Password)
+        {
             var usuario = Usuario;
             var contrasenia = Password;
-            
+
             //if RECIBO EL VISTO BUENO{
             //GENERAR EL TOKEN
             //DAR EL TOKEN AL USUARIO en forma de archivo y hacerlo descargable TokenUsuario.token. poner un popup que diga:
             //"el archivo que recibio es su llave. no lo modifique. uselo cuando la app se lo solicite"}
             //else {Enviar un popup que diga sorry usuario/password incorrecto}
-            
-             return View();
+
+            return View();
         }
         public ActionResult Inicio()
         {
@@ -178,53 +183,86 @@ namespace vistas.Controllers
         }
         public ActionResult SalaDeChat()
         {
-
-            //Recibir la lista de usuarios y generar una ista que uestre todos los usuarios. 
-            //Poner un buscador para buscar el nombre del usuario con el que se desea tener una conversacion y un boton que envie esa info a la dattabase
-            //mandarlo a la vista TOKEN
+            usuarioReceptor = string.Empty;
+            var usuarios = new List<UsersModels>();
             
+
+            ViewBag.Matriz = usuarios.ToArray();
             return View();
         }
-        public ActionResult Chats(string Mensaje, HttpPostedFileBase ArchivoImportado)
+
+        public ActionResult Chats(IFormFile ArchivoImportado, string Mensaje)
         {
-            if (Mensaje!=null)
+            if (Mensaje != null && ArchivoImportado != null)
             {
                 var mensaje = Mensaje;
                 var hora = DateTime.Now;
                 var emisor = usuarioEnControl;
+                var receptor = usuarioReceptor;
+                var bytesArchivo = new List<byte>();
+                using (var Lectura = new BinaryReader(ArchivoImportado.OpenReadStream()))
+                {
+                    while (Lectura.BaseStream.Position != Lectura.BaseStream.Length)
+                    {
+                        bytesArchivo.Add(Lectura.ReadByte());
+                    }
+                }
+                byte[] archivo = Libreria.Metodos.LZWCompress(bytesArchivo.ToArray(), ArchivoImportado.FileName);
+                var nombreArchivo = ArchivoImportado.FileName;
 
             }
-            else if(ArchivoImportado!=null)
+            else if (ArchivoImportado == null && Mensaje != null)
             {
-
+                var hora = DateTime.Now;
+                var emisor = usuarioEnControl;
+                var receptor = usuarioReceptor;
+                var bytesArchivo = new List<byte>();
+                using (var Lectura = new BinaryReader(ArchivoImportado.OpenReadStream()))
+                {
+                    while (Lectura.BaseStream.Position != Lectura.BaseStream.Length)
+                    {
+                        bytesArchivo.Add(Lectura.ReadByte());
+                    }
+                }
+                byte[] archivo = Libreria.Metodos.LZWCompress(bytesArchivo.ToArray(), ArchivoImportado.FileName);
+                var nombreArchivo = ArchivoImportado.FileName;
             }
-            
-            
-            var mensajs = new List<Mensajes>();
-            var aux = new Mensajes();
-            aux.emisor = "tú";
-            aux.mensaje = "Hola";
-            aux.hora = "12:00";
+            else if (ArchivoImportado != null && Mensaje == null)
+            {
+                var mensaje = Mensaje;
+                var hora = DateTime.Now;
+                var emisor = usuarioEnControl;
+                var receptor = usuarioReceptor;
+            }
+            else
+            {
+            }
+
+            var mensajs = new List<MessagesModel>();
+            var aux = new MessagesModel();
+            aux.EmisorMsg = "tú";
+            aux.Mensaje = "Hola";
+            aux.FechaEnvio = DateTime.Today;
             mensajs.Add(aux);
-           aux = new Mensajes();
-            aux.emisor = "amix";
-            aux.mensaje = "Hola";
-            aux.hora = "12:10";
+            aux = new MessagesModel();
+            aux.EmisorMsg = "amix";
+            aux.Mensaje = "Hola";
+            aux.FechaEnvio = DateTime.Today;
             mensajs.Add(aux);
-            aux = new Mensajes();
-            aux.emisor = "tú";
-            aux.mensaje = "todo bien?";
-            aux.hora = "12:20";
+            aux = new MessagesModel();
+            aux.EmisorMsg = "tú";
+            aux.Mensaje = "todo bien?";
+            aux.FechaEnvio = DateTime.Today;
             mensajs.Add(aux);
-            aux = new Mensajes();
-            aux.emisor = "amix";
-            aux.mensaje = "todo correto";
-            aux.hora = "12:30";
+            aux = new MessagesModel();
+            aux.EmisorMsg = "amix";
+            aux.Mensaje = "todo correto";
+            aux.FechaEnvio = DateTime.Today;
             mensajs.Add(aux);
 
             ViewBag.Matriz = mensajs.ToArray();
-            //envia el nombre del usuario con el que desea hablar y recibe Mauricio los mensajes de los usuarios
-            //con esta info recibida mostrar los mensajes de los usarios coronologicamente, el nombre del uuario con el que se está charlando 
+
+
             //colocar el buscado de mensajes y buscador de archivos para descargar 
             //para los archivos: si existe solo hacer que se descargue. si no está popup "no existe"
             //para la busqueda intentar con una partial view sin salirse del chat y mostrar la lista de mensajes con el emisor y la hora. en ultima instancia será una vista normal que regrese a la sala de chat
@@ -235,12 +273,82 @@ namespace vistas.Controllers
 
             return View();
         }
-        public ActionResult Tokens()
+        public ActionResult Tokens(string usuario,IFormFile ArchivoToken)
         {
+            if (ArchivoToken == null && usuario == null)
+            {
+                //error
+            }
+            else if (ArchivoToken == null && usuario != null)
+            {
+                usuarioTry = usuario;
+            }
+            else if (ArchivoToken != null && usuario == null)
+            {
+                if (true/*if existe el usuario*/)
+                {
+                    usuarioReceptor = usuarioTry;
+                }
+                else
+                {
+                    //error
+                    
+                }
+            }
             //pide al usuario que envie un archivo de tipo .token y validarlo con el usuario
             //si es valido enviarlo a la vista Chats con la info del usuario con el que desea hablar
             //si no popup"esto es invalido" y regresarlo a SalaDeChat
             return View();
         }
+        [HttpPost]
+        public ActionResult BusquedaM(string Mensaje)
+        {
+            var mensaje = Mensaje;
+            var emisor = usuarioEnControl;
+            var receptor = usuarioReceptor;
+
+
+            var mensajs = new List<MessagesModel>();
+            var aux = new MessagesModel();
+            aux.EmisorMsg = "tú";
+            aux.Mensaje = "Hola";
+            aux.FechaEnvio = DateTime.Today;
+            mensajs.Add(aux);
+            aux = new MessagesModel();
+            aux.EmisorMsg = "amix";
+            aux.Mensaje = "Hola";
+            aux.FechaEnvio = DateTime.Today;
+            mensajs.Add(aux);
+            aux = new MessagesModel();
+            aux.EmisorMsg = "tú";
+            aux.Mensaje = "todo bien?";
+            aux.FechaEnvio = DateTime.Today;
+            mensajs.Add(aux);
+            aux = new MessagesModel();
+            aux.EmisorMsg = "amix";
+            aux.Mensaje = "todo correto";
+            aux.FechaEnvio = DateTime.Today;
+            mensajs.Add(aux);
+
+            ViewBag.Matriz = mensajs.ToArray();
+
+            return View();
         }
+        public ActionResult BusquedaM()
+        { 
+            return View();
+        }
+        public ActionResult DescargarArchivos(string nombre)
+        {
+            var nombreArchivo = nombre;
+            //enivarlo
+
+            return View();
+        }
+
+
+
+
+    }
+        
 }

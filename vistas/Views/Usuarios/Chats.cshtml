@@ -3,7 +3,6 @@
     ViewData["Title"] = "Chats";
 }
 
-<h2>Chats</h2>
 <table style="width:100%">
 
     <tr>
@@ -16,22 +15,32 @@
             <td>@item.emisor:  @item.mensaje       -@item.hora</td>
         </tr>
     }
-    <h2></h2>
-    <div class="input-group">
-        @using (Html.BeginForm("Chats", "Usuarios", FormMethod.Post, new { enctype = "multipart/form-data" }))
-        {
-
-            <input type="text" name="Mensaje">
-            <input type="submit" value="Enviar" class="btn btn-default" />
-        }
-    </div>
-    <div class="input-group">
-        @using (Html.BeginForm("Chats", "Usuarios", FormMethod.Post, new { enctype = "multipart/form-data" }))
-        {
-            <input type="file" name="ArchivoImportado">
-            <input type="submit" value="Enviar" class="btn btn-default" />
-        }
-    </div>
-
-
 </table>
+<h2></h2>
+<h2></h2>
+<div class="input-group">
+    @using (Html.BeginForm("Chats", "Usuarios", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        <input type="text" name="Mensaje">
+        <input type="submit" value="Enviar" class="btn btn-default" />
+        <input type="file" name="ArchivoImportado" />
+    }
+</div>
+<h2></h2>
+<h2></h2>
+<h3>Buscar mensajes</h3>
+<div class="input-group">
+    @using (Html.BeginForm("BusquedaM", "Usuarios", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        <input type="text" name="Mensaje">
+        <input type="submit" value="Enviar" class="btn btn-default" />
+    }
+</div>
+<h3>Descargar archivos</h3>
+<div class="input-group">
+    @using (Html.BeginForm("Chats", "Usuarios", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        <input type="text" name="Mensaje">
+        <input type="submit" value="Enviar" class="btn btn-default" />
+    }
+</div>

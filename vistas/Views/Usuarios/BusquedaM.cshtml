@@ -1,0 +1,24 @@
+﻿
+@{
+    ViewData["Title"] = "BusquedaM";
+}
+
+<h3>Mensajes encontrados: </h3>
+
+<table style="width:100%">
+
+    <tr>
+        <th>Mensajes</th>
+
+    </tr>
+    @foreach (var item in ViewBag.Matriz)
+    {
+        <tr>
+            <td>@item.emisor:  @item.mensaje       -@item.hora</td>
+        </tr>
+    }
+</table>
+<h2></h2>
+<a href="/Usuarios/Chats">
+    <input type="button" value="Ingresar nuevo usuario" />
+</a>

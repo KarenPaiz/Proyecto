@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -306,7 +307,7 @@ namespace Libreria
                 CaracterDiccionario = Convert.ToChar(TextoComprimido[contLec]);
                 contLec++;
             }
-            extensionArchivo = "." + extensionArchivo;
+            extensionArchivo =  extensionArchivo+".";
             var byteAnalizado = string.Empty;
             var listaCaracteresComprimidos = new List<int>();
             while (contLec != TextoComprimido.Length && listaCaracteresComprimidos.Count < Convert.ToInt32(CantidadTexto))
@@ -361,6 +362,10 @@ namespace Libreria
                 primerCaracter = cadenaAnalizada;
             }
             var texto = decompressed.ToString().ToCharArray();
+            foreach (var item in extensionArchivo)
+            {
+                bytesRegresa.Add(Convert.ToByte(item));
+            }
             foreach (var item in texto)
             {
                 bytesRegresa.Add(Convert.ToByte(item));
@@ -368,10 +373,10 @@ namespace Libreria
             return bytesRegresa.ToArray();
         }
 
-        /*public static BigInteger DiffieHelmannAlgorithm(int numberA, int numberB)
+        public static BigInteger DiffieHelmannAlgorithm(int numberA, int numberB)
    {
        BigInteger numberG = 11;
-       BigInteger numberP = 23;
+       BigInteger numberP = 33;
        BigInteger numberFromA = BigInteger.ModPow(numberG, (numberA), numberP);
        BigInteger numberFromB = BigInteger.ModPow(numberG, (numberB), numberP);
        BigInteger SecretKeyFromA = BigInteger.ModPow(numberFromB, (numberA), numberP);
@@ -382,6 +387,6 @@ namespace Libreria
        }
        return 0;
    }
-   */
+   
     }
 }
