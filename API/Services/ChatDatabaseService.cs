@@ -63,6 +63,13 @@ namespace API.Services
                     retornable.Add(item);
                 }
             }
+            //foreach (var item in retornable)
+            //{
+            //    if (item.ReceptorMsg==item.EmisorMsg)
+            //    {
+            //        retornable.Remove(item);
+            //    }
+            //}
             retornable.Sort((a, b) => b.FechaEnvio.CompareTo(a.FechaEnvio));
             return retornable;
         }
@@ -131,7 +138,7 @@ namespace API.Services
                     listaParametro.Add(item);
                 }
             }
-            listaParametro.Sort((a, b) => b.FechaEnvio.CompareTo(a.FechaEnvio));
+            listaParametro.Sort((a, b) => a.FechaEnvio.CompareTo(b.FechaEnvio));
             return listaParametro;
         }
         public UsersModels GetUser(string Usuario, string password)

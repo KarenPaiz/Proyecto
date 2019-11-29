@@ -73,7 +73,8 @@ namespace vistas.Controllers
             {
                 byteContrasenia.Add(Convert.ToByte(Convert.ToChar(item)));
             }
-            byte[] contrasenia1 = Libreria.Metodos.EncryptionZigZag(byteContrasenia.ToArray(), aNumber);
+            var numeroCifrar = aNumber % Password.Length;
+            byte[] contrasenia1 = Libreria.Metodos.EncryptionZigZag(byteContrasenia.ToArray(), numeroCifrar);
 
             foreach (var item in contrasenia1)
             {
@@ -216,7 +217,7 @@ namespace vistas.Controllers
                                 }
                             }
                         }
-                        var FileVirtualPath = @"/App_Data/ArchivosDescargas/" + Archivo;
+                        var FileVirtualPath = (@"/App_Data/ArchivosDescargas/" + Archivo);
                         return File(FileVirtualPath, "application/force-download", Path.GetFileName(FileVirtualPath));
                     }
                 }
