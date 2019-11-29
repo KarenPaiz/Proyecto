@@ -8,6 +8,9 @@ using Microsoft.AspNetCore.Mvc;
 using System.IO;
 using vistas.Models;
 using System.Net.Http;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using Microsoft.IdentityModel.Tokens;
 
 namespace vistas.Controllers
 {
@@ -16,6 +19,7 @@ namespace vistas.Controllers
         static string usuarioEnControl;
         static string usuarioReceptor;
         static string usuarioTry;
+        public static string key = "MauricioYSamanthaGanaranEsteCurso";
         public ActionResult IngresoU()
         {
             return View();
@@ -107,11 +111,6 @@ namespace vistas.Controllers
         public ActionResult Inicio(IFormCollection collection, string Usuario, string Password)
         {
             string[] UsuarioPassword = { Usuario, Password };
-            //if RECIBO EL VISTO BUENO{
-            //GENERAR EL TOKEN
-            //DAR EL TOKEN AL USUARIO en forma de archivo y hacerlo descargable TokenUsuario.token. poner un popup que diga:
-            //"el archivo que recibio es su llave. no lo modifique. uselo cuando la app se lo solicite"}
-            //else {Enviar un popup que diga sorry usuario/password incorrecto}
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri("http://localhost:59679");
@@ -125,6 +124,7 @@ namespace vistas.Controllers
                     if (readJob.Result)
                     {
                         usuarioEnControl = Usuario;
+                        cookieUsuarios("UsuarioControl", Usuario);
                         return RedirectToAction("SalaDeChat");
                     }
                     return RedirectToAction("Inicio");
@@ -135,11 +135,13 @@ namespace vistas.Controllers
         }
         public ActionResult Inicio()
         {
+
             return View();
         }
         [HttpPost]
         public ActionResult SalaDeChat(string usuarioBusqueda)
         {
+            usuarioEnControl = obtainCookieUsuarios("UsuarioControl");
             if (usuarioBusqueda != null)
             {
                 using (var client = new HttpClient())
@@ -165,6 +167,7 @@ namespace vistas.Controllers
         }
         public ActionResult SalaDeChat()
         {
+            usuarioEnControl = obtainCookieUsuarios("UsuarioControl");
             usuarioReceptor = string.Empty;
             var usuarios = new List<UsersModels>();
             using (var client = new HttpClient())
@@ -190,6 +193,7 @@ namespace vistas.Controllers
         [HttpPost]
         public ActionResult Chats(string Archivo)
         {
+            usuarioEnControl = obtainCookieUsuarios("UsuarioControl");
             Directory.CreateDirectory("C:/App_Data/ArchivosDescargas/");
             if (Archivo != null)
             {
@@ -246,7 +250,7 @@ namespace vistas.Controllers
         public ActionResult Chats()
         {
 
-
+            usuarioEnControl = obtainCookieUsuarios("UsuarioControl");
             var mensajs = new List<MessagesModel>();
             using (var client = new HttpClient())
             {
@@ -268,6 +272,7 @@ namespace vistas.Controllers
         }
         public ActionResult EnvioMensajes(IFormFile ArchivoImportado, string Mensaje)
         {
+            usuarioEnControl = obtainCookieUsuarios("UsuarioControl");
             var ObjetoMensaje = new MessagesModel();
             if (Mensaje != null && ArchivoImportado != null)
             {
@@ -351,6 +356,7 @@ namespace vistas.Controllers
         }
         public ActionResult Tokens(string usuario, IFormFile ArchivoToken)
         {
+            usuarioEnControl = obtainCookieUsuarios("UsuarioControl");
             if (ArchivoToken == null && usuario == null)
             {
                 //error
@@ -379,6 +385,7 @@ namespace vistas.Controllers
         [HttpPost]
         public ActionResult BusquedaM(string Mensaje)
         {
+            usuarioEnControl = obtainCookieUsuarios("UsuarioControl");
             string[] parameters = { usuarioEnControl, usuarioReceptor, Mensaje };
 
             var mensajs = new List<MessagesModel>();
@@ -402,6 +409,7 @@ namespace vistas.Controllers
         }
         public ActionResult BusquedaM()
         {
+            usuarioEnControl = obtainCookieUsuarios("UsuarioControl");
             var mensajs = new List<MessagesModel>();
 
             using (var client = new HttpClient())
@@ -423,12 +431,54 @@ namespace vistas.Controllers
         }
         public ActionResult DescargarArchivos(string nombre)
         {
+            usuarioEnControl = obtainCookieUsuarios("UsuarioControl");
             var nombreArchivo = nombre;
             //enivarlo
 
             return View();
         }
 
+
+        public void cookieUsuarios(string marca, string contenido)
+        {
+            HttpContext.Response.Cookies.Append(marca, contenido, new CookieOptions()
+            {
+                Expires = DateTime.Now.AddDays(5)
+            });
+        }
+        public string obtainCookieUsuarios(string marca)
+        {
+            return HttpContext.Request.Cookies[marca];
+        }
+        public void tokenCookie(string value, [FromBody]Dictionary<string, string> objeto)
+        {
+            var buffer = value.PadRight(64, ' ')
+               .ToCharArray()
+               .Select(x => Convert.ToByte(x))
+               .ToArray();
+            var hander = new JwtSecurityTokenHandler();
+            var claims = objeto.Select(x => new Claim(x.Key, x.Value.ToString()));
+            var description = new SecurityTokenDescriptor
+            {
+                Issuer = "todos",
+                Audience = "audiencia",
+                Expires = DateTime.UtcNow.AddSeconds(10),
+                Subject = new ClaimsIdentity(claims),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(buffer), SecurityAlgorithms.HmacSha256)
+            };
+            var token = hander.CreateToken(description);
+            var tokenstring = hander.WriteToken(token);
+
+            HttpContext.Response.Cookies.Append("tokens", tokenstring, new CookieOptions()
+            {
+                Expires = DateTime.Now.AddDays(5)
+            });
+        }
+        public bool validateCookie(string authToken)
+        {
+            string token = HttpContext.Request.Cookies["tokens"];
+            return true;
+        }
     }
 
 }
