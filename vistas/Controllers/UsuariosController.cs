@@ -73,7 +73,7 @@ namespace vistas.Controllers
             {
                 byteContrasenia.Add(Convert.ToByte(Convert.ToChar(item)));
             }
-            var numeroCifrar = aNumber % Password.Length;
+            var numeroCifrar = Password.Length-1%aNumber;
             byte[] contrasenia1 = Libreria.Metodos.EncryptionZigZag(byteContrasenia.ToArray(), numeroCifrar);
 
             foreach (var item in contrasenia1)
@@ -190,7 +190,7 @@ namespace vistas.Controllers
         [HttpPost]
         public ActionResult Chats(string Archivo)
         {
-            Directory.CreateDirectory(@"/App_Data/ArchivosDescargas/");
+            Directory.CreateDirectory("C:/App_Data/ArchivosDescargas/");
             if (Archivo != null)
             {
                 byte[] bytesArchivo;
@@ -207,7 +207,7 @@ namespace vistas.Controllers
                         readJob.Wait();
                         bytesArchivo = readJob.Result;
                         aEscribir = Libreria.Metodos.LZWDecompress(bytesArchivo);
-                        using (var writestream = new FileStream(@"/App_Data/ArchivosDescargas/" + Archivo,FileMode.OpenOrCreate))
+                        using (var writestream = new FileStream("C:/App_Data/ArchivosDescargas/" + Archivo,FileMode.OpenOrCreate))
                         {
                             using (var writer = new BinaryWriter(writestream))
                             {
@@ -217,8 +217,9 @@ namespace vistas.Controllers
                                 }
                             }
                         }
-                        var FileVirtualPath = (@"/App_Data/ArchivosDescargas/" + Archivo);
-                        return File(FileVirtualPath, "application/force-download", Path.GetFileName(FileVirtualPath));
+                        var fs = System.IO.File.OpenRead("C:/App_Data/ArchivosDescargas/"+Archivo);
+
+                        return File(fs, "application/force-download", Archivo);
                     }
                 }
                

@@ -48,7 +48,8 @@ namespace API.Controllers
                 {
                     mensajeEncriptado[i] = Convert.ToByte(Convert.ToChar(item.Mensaje[i]));
                 }
-                var messageEncriptado = Libreria.Metodos.DecryptZZ(mensajeEncriptado, Convert.ToInt32(secretKey));
+                int result = (int)secretKey;
+                var messageEncriptado = Libreria.Metodos.DecryptZZ(mensajeEncriptado, result);
                 var mensajeGuardar = string.Empty;
                 for (int i = 0; i < messageEncriptado.Length; i++)
                 {
@@ -63,6 +64,27 @@ namespace API.Controllers
         public ActionResult<List<MessagesModel>> GetMsgsParam(string[] parameters)
         {
             var listaMensajes = _chatDatabaseService.GetMessagesParam(parameters[0],parameters[1],parameters[2]);
+            foreach (var item in listaMensajes)
+            {
+                var emisor = item.EmisorMsg;
+                var validatedSend = _chatDatabaseService.ValidateUser(emisor);
+                var receptor = item.ReceptorMsg;
+                var validatedGet = _chatDatabaseService.ValidateUser(receptor);
+                var secretKey = Libreria.Metodos.DiffieHelmannAlgorithm(validatedSend.IDDH, validatedGet.IDDH);
+                var mensajeEncriptado = new byte[item.Mensaje.Length];
+                for (int i = 0; i < item.Mensaje.Length; i++)
+                {
+                    mensajeEncriptado[i] = Convert.ToByte(Convert.ToChar(item.Mensaje[i]));
+                }
+                int result = (int)secretKey;
+                var messageEncriptado = Libreria.Metodos.DecryptZZ(mensajeEncriptado, result);
+                var mensajeGuardar = string.Empty;
+                for (int i = 0; i < messageEncriptado.Length; i++)
+                {
+                    mensajeGuardar += Convert.ToChar(messageEncriptado[i]);
+                }
+                item.Mensaje = mensajeGuardar;
+            }
             return Ok(listaMensajes);
         }
 
@@ -75,21 +97,8 @@ namespace API.Controllers
 
         [Route("CreateUser")]
         public ActionResult<UsersModels> PostNewUser(UsersModels User)
-        {
-            var numeroDH = User.IDDH;
-            var numeroCifrar = User.IDDH % User.Password.Length;
-            var contraBytes = new byte[User.Password.Length];
-            for (int i = 0; i < User.Password.Length; i++)
-            {
-                contraBytes[i] = Convert.ToByte(User.Password[i]);
-            }
-            var contrasenia = Libreria.Metodos.EncryptionZigZag(contraBytes, numeroCifrar);
-            var passEncriptado = string.Empty;
-            for (int i = 0; i < contrasenia.Length; i++)
-            {
-                passEncriptado+= Convert.ToChar(contrasenia[i]);
-            }
-            User.Password = passEncriptado;
+        {          
+            
             var creadoConExito = _chatDatabaseService.CreateUserSuccess(User);
             if (creadoConExito == false)
             {
@@ -111,7 +120,8 @@ namespace API.Controllers
             {
                 mensajeOriginal[i]=Convert.ToByte(Convert.ToChar(Message.Mensaje[i]));
             }
-            var messageEncriptado = Libreria.Metodos.EncryptionZigZag(mensajeOriginal, Convert.ToInt32(secretKey));
+            int result = (int)secretKey;
+            var messageEncriptado = Libreria.Metodos.EncryptionZigZag(mensajeOriginal, result);
             var mensajeGuardar= string.Empty;
             for (int i = 0; i < messageEncriptado.Length; i++)
             {
@@ -128,19 +138,20 @@ namespace API.Controllers
         public ActionResult<bool> Login(string [] UsuarioPassword)
         {
             var validateduser = _chatDatabaseService.ValidateUser(UsuarioPassword[0]);
-            var numeroCifrar = validateduser.IDDH % UsuarioPassword[1].Length;
-            var contraBytes = new byte[validateduser.Password.Length];
-            for (int i = 0; i < validateduser.Password.Length; i++)
+            var numeroCifrar = UsuarioPassword[1].Length-1%validateduser.IDDH;
+            var contraBytes = new byte[UsuarioPassword[1].Length];
+            for (int i = 0; i < UsuarioPassword[1].Length; i++)
             {
-                contraBytes[i] = Convert.ToByte(validateduser.Password[i]);
+                var character = Convert.ToChar(UsuarioPassword[1][i]);
+                contraBytes[i] = Convert.ToByte(character);
             }
-            var contrasenia = Libreria.Metodos.DecryptZZ(contraBytes,numeroCifrar);
+            var contrasenia = Libreria.Metodos.EncryptionZigZag(contraBytes,numeroCifrar);
             var contraseniaString = string.Empty;
             for (int i = 0; i < contrasenia.Length; i++)
             {
                 contraseniaString += Convert.ToChar(contrasenia[i]);
             }
-            if (contraseniaString==UsuarioPassword[1])
+            if (contraseniaString==validateduser.Password)
             {
                 return true;
             }
