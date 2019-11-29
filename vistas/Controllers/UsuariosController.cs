@@ -11,6 +11,8 @@ using System.Net.Http;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Principal;
+using System.Text;
 
 namespace vistas.Controllers
 {
@@ -414,6 +416,13 @@ namespace vistas.Controllers
             ViewBag.Matriz = mensajs.ToArray();
             return View();
         }
+        public ActionResult LogOut()
+        {
+            usuarioEnControl = " ";
+            usuarioReceptor = " ";
+            //Borrar cookies
+            return RedirectToAction("Inicio");
+        }
 
         public ActionResult DescargarArchivos(string nombre)
         {
@@ -463,19 +472,36 @@ namespace vistas.Controllers
             });
         }
 
-        public bool validateCookie(string authToken)
+        public bool validateCookie(string authToken, string usuario)
         {
             string token = HttpContext.Request.Cookies["tokens"];
+            return ValidateToken(token, usuario);
+        }
+
+        public bool ValidateToken(string authToken, string usuario)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var validationParameters = GetValidationParameters(usuario);
+            SecurityToken validatedToken;
+            IPrincipal principal = tokenHandler.ValidateToken(authToken, validationParameters, out validatedToken);
             return true;
         }
 
-        public ActionResult LogOut()
+        public TokenValidationParameters GetValidationParameters(string texto)
         {
-            usuarioEnControl = " ";
-            usuarioReceptor = " ";
-            //Borrar cookies
-            return RedirectToAction("Inicio");
+            return new TokenValidationParameters()
+            {
+                ValidateLifetime = false, // Because there is no expiration in the generated token
+                ValidateAudience = false, // Because there is no audiance in the generated token
+                ValidateIssuer = false,   // Because there is no issuer in the generated token
+                ValidIssuer = "Usuario",
+                ValidAudience = texto,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)) // The same key as the one that generate the token
+            };
         }
+
+
+
     }
 
 }
