@@ -201,8 +201,15 @@ namespace vistas.Controllers
         [HttpPost]
         public ActionResult Chats(string Archivo)
         {
+            
             usuarioReceptor = obtainCookieUsuarios("UsuarioReceptor");
             usuarioEnControl = obtainCookieUsuarios("UsuarioControl");
+            var tokenValido = validateCookie(usuarioEnControl);
+            //if (!tokenValido)
+            //{
+            //    //error
+            //    return RedirectToAction("Inicio");
+            //}
             Directory.CreateDirectory("C:/App_Data/ArchivosDescargas/");
             if (Archivo != null)
             {
@@ -472,7 +479,7 @@ namespace vistas.Controllers
             });
         }
 
-        public bool validateCookie(string authToken, string usuario)
+        public bool validateCookie(string usuario)
         {
             string token = HttpContext.Request.Cookies["tokens"];
             return ValidateToken(token, usuario);
