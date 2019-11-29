@@ -123,6 +123,8 @@ namespace vistas.Controllers
                     readJob.Wait();
                     if (readJob.Result)
                     {
+                        var diccionario = new Dictionary<string, string>();
+                        diccionario.Add("Usuario", Usuario);
                         usuarioEnControl = Usuario;
                         cookieUsuarios("UsuarioControl", Usuario);
                         return RedirectToAction("SalaDeChat");
