@@ -1,13 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28010.2036
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29509.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "vistas", "vistas\vistas.csproj", "{E5FE596E-063C-4F0C-B210-17088CD5F97E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "API", "API\API.csproj", "{E6EAE42F-0696-4326-AFD8-640C31E96A66}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Libreria", "Libreria\Libreria.csproj", "{CB71AC99-731D-4185-8B60-0FA555E5C216}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vistas2", "Vistas2\Vistas2.csproj", "{2E06E864-731B-4529-8FC7-59EECBD0928D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{CB71AC99-731D-4185-8B60-0FA555E5C216}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CB71AC99-731D-4185-8B60-0FA555E5C216}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CB71AC99-731D-4185-8B60-0FA555E5C216}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E06E864-731B-4529-8FC7-59EECBD0928D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E06E864-731B-4529-8FC7-59EECBD0928D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E06E864-731B-4529-8FC7-59EECBD0928D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E06E864-731B-4529-8FC7-59EECBD0928D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,0 +1,32 @@
+﻿
+@{
+    ViewBag.Title = "SalaDeChat";
+}
+
+
+<h2>Sala De Chats</h2>
+
+<table style="width:100%">
+
+    <tr>
+        <th>Usuarios</th>
+
+    </tr>
+    @foreach (var item in ViewBag.Matriz)
+    {
+        <tr>
+            <td>@item.Usuario</td>
+        </tr>
+    }
+</table>
+<h2></h2>
+<h2></h2>
+<h4>Escribe el usuario de la persona con quien desees charlar</h4>
+<div class="input-group">
+    @using (Html.BeginForm("SalaDeChat", "Usuarios", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        <input type="text" name="usuarioBusqueda">
+        <input type="submit" value="Buscar" class="btn btn-default" />
+    }
+</div>
+

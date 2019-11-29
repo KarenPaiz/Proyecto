@@ -1,0 +1,46 @@
+﻿
+@{
+    ViewBag.Title = "Chats";
+}
+
+<table style="width:100%">
+
+    <tr>
+        <th>Mensajes</th>
+
+    </tr>
+    @foreach (var item in ViewBag.Matriz)
+    {
+        <tr>
+            <td>@item.EmisorMsg :  @item.Mensaje -@item.NombreArchivo   -@item.FechaEnvio   </td>
+        </tr>
+    }
+</table>
+<h2></h2>
+
+<a href="/Usuarios/EnvioMensajes">
+    <input type="button" value="Enviar mensajes" />
+</a>
+
+<h2></h2>
+<h2></h2>
+<h3>Buscar mensajes con palabra clave</h3>
+<div class="input-group">
+    @using (Html.BeginForm("BusquedaM", "Usuarios", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        <input type="text" name="Mensaje">
+        <input type="submit" value="Buscar Mensajes" class="btn btn-default" />
+    }
+</div>
+<h3>Descargar archivos</h3>
+<div class="input-group">
+    @using (Html.BeginForm("Chats", "Usuarios", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        <input type="text" name="Archivo">
+        <input type="submit" value="Buscar Archivo" class="btn btn-default" />
+    }
+</div>
+
+<a href="/Usuarios/SalaDeChat">
+    <input type="button" value="Regresar a Sala de Chat" />
+</a>

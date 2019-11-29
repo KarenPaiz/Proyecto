@@ -164,5 +164,13 @@ namespace API.Controllers
             var x = (UserDB != null) ? true : false;
             return Ok(x);
         }
+
+        [Route("UserExists")]
+        public ActionResult<bool> UserExists([FromBody]string usuarioBusqueda)
+        {
+            var UserDB = _chatDatabaseService.ValidateUser(usuarioBusqueda);
+            var x = (UserDB != null) ? true : false;
+            return Ok(x);
+        }
     }
 }
