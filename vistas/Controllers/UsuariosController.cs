@@ -156,7 +156,9 @@ namespace vistas.Controllers
                         readJob.Wait();
                         if (readJob.Result)
                         {
+                            cookieUsuarios("UsuarioReceptor", usuarioBusqueda);
                             usuarioReceptor = usuarioBusqueda;
+                            
                             return RedirectToAction("Chats");
                         }
                         return RedirectToAction("SalaDeChat");
@@ -193,10 +195,12 @@ namespace vistas.Controllers
         [HttpPost]
         public ActionResult Chats(string Archivo)
         {
+            usuarioReceptor = obtainCookieUsuarios("UsuarioReceptor");
             usuarioEnControl = obtainCookieUsuarios("UsuarioControl");
             Directory.CreateDirectory("C:/App_Data/ArchivosDescargas/");
             if (Archivo != null)
             {
+
                 byte[] bytesArchivo;
                 byte[] aEscribir;
                 using (var client = new HttpClient())
@@ -249,7 +253,7 @@ namespace vistas.Controllers
         }
         public ActionResult Chats()
         {
-
+            usuarioReceptor = obtainCookieUsuarios("UsuarioReceptor");
             usuarioEnControl = obtainCookieUsuarios("UsuarioControl");
             var mensajs = new List<MessagesModel>();
             using (var client = new HttpClient())
@@ -272,6 +276,7 @@ namespace vistas.Controllers
         }
         public ActionResult EnvioMensajes(IFormFile ArchivoImportado, string Mensaje)
         {
+            usuarioReceptor = obtainCookieUsuarios("UsuarioReceptor");
             usuarioEnControl = obtainCookieUsuarios("UsuarioControl");
             var ObjetoMensaje = new MessagesModel();
             if (Mensaje != null && ArchivoImportado != null)
@@ -354,37 +359,10 @@ namespace vistas.Controllers
 
             return View();
         }
-        public ActionResult Tokens(string usuario, IFormFile ArchivoToken)
-        {
-            usuarioEnControl = obtainCookieUsuarios("UsuarioControl");
-            if (ArchivoToken == null && usuario == null)
-            {
-                //error
-            }
-            else if (ArchivoToken == null && usuario != null)
-            {
-                usuarioTry = usuario;
-            }
-            else if (ArchivoToken != null && usuario == null)
-            {
-                if (true/*if existe el usuario*/)
-                {
-                    usuarioReceptor = usuarioTry;
-                }
-                else
-                {
-                    //error
-
-                }
-            }
-            //pide al usuario que envie un archivo de tipo .token y validarlo con el usuario
-            //si es valido enviarlo a la vista Chats con la info del usuario con el que desea hablar
-            //si no popup"esto es invalido" y regresarlo a SalaDeChat
-            return View();
-        }
         [HttpPost]
         public ActionResult BusquedaM(string Mensaje)
         {
+            usuarioReceptor = obtainCookieUsuarios("UsuarioReceptor");
             usuarioEnControl = obtainCookieUsuarios("UsuarioControl");
             string[] parameters = { usuarioEnControl, usuarioReceptor, Mensaje };
 
@@ -409,6 +387,7 @@ namespace vistas.Controllers
         }
         public ActionResult BusquedaM()
         {
+            usuarioReceptor = obtainCookieUsuarios("UsuarioReceptor");
             usuarioEnControl = obtainCookieUsuarios("UsuarioControl");
             var mensajs = new List<MessagesModel>();
 
@@ -431,6 +410,7 @@ namespace vistas.Controllers
         }
         public ActionResult DescargarArchivos(string nombre)
         {
+            usuarioReceptor = obtainCookieUsuarios("UsuarioReceptor");
             usuarioEnControl = obtainCookieUsuarios("UsuarioControl");
             var nombreArchivo = nombre;
             //enivarlo
