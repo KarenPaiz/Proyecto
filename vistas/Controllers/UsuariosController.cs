@@ -18,7 +18,6 @@ namespace vistas.Controllers
     {
         static string usuarioEnControl;
         static string usuarioReceptor;
-        static string usuarioTry;
         public static string key = "MauricioYSamanthaGanaranEsteCurso";
         public ActionResult IngresoU()
         {
@@ -77,7 +76,7 @@ namespace vistas.Controllers
             {
                 byteContrasenia.Add(Convert.ToByte(Convert.ToChar(item)));
             }
-            var numeroCifrar = Password.Length-1%aNumber;
+            var numeroCifrar = Password.Length - 1 % aNumber;
             byte[] contrasenia1 = Libreria.Metodos.EncryptionZigZag(byteContrasenia.ToArray(), numeroCifrar);
 
             foreach (var item in contrasenia1)
@@ -106,6 +105,7 @@ namespace vistas.Controllers
             ModelState.AddModelError(string.Empty, "Error");
             return View();
         }
+
         [HttpPost]
         //[ValidateAntiForgeryToken]
         public ActionResult Inicio(IFormCollection collection, string Usuario, string Password)
@@ -138,6 +138,7 @@ namespace vistas.Controllers
 
             return View();
         }
+
         [HttpPost]
         public ActionResult SalaDeChat(string usuarioBusqueda)
         {
@@ -158,7 +159,7 @@ namespace vistas.Controllers
                         {
                             cookieUsuarios("UsuarioReceptor", usuarioBusqueda);
                             usuarioReceptor = usuarioBusqueda;
-                            
+
                             return RedirectToAction("Chats");
                         }
                         return RedirectToAction("SalaDeChat");
@@ -192,6 +193,7 @@ namespace vistas.Controllers
             ViewBag.Matriz = usuarios.ToArray();
             return View();
         }
+
         [HttpPost]
         public ActionResult Chats(string Archivo)
         {
@@ -215,7 +217,7 @@ namespace vistas.Controllers
                         readJob.Wait();
                         bytesArchivo = readJob.Result;
                         aEscribir = Libreria.Metodos.LZWDecompress(bytesArchivo);
-                        using (var writestream = new FileStream("C:/App_Data/ArchivosDescargas/" + Archivo,FileMode.OpenOrCreate))
+                        using (var writestream = new FileStream("C:/App_Data/ArchivosDescargas/" + Archivo, FileMode.OpenOrCreate))
                         {
                             using (var writer = new BinaryWriter(writestream))
                             {
@@ -225,12 +227,12 @@ namespace vistas.Controllers
                                 }
                             }
                         }
-                        var fs = System.IO.File.OpenRead("C:/App_Data/ArchivosDescargas/"+Archivo);
+                        var fs = System.IO.File.OpenRead("C:/App_Data/ArchivosDescargas/" + Archivo);
 
                         return File(fs, "application/force-download", Archivo);
                     }
                 }
-               
+
                 //Escribir a archivo
             }
             var mensajs = new List<MessagesModel>();
@@ -274,6 +276,7 @@ namespace vistas.Controllers
 
             return View();
         }
+
         public ActionResult EnvioMensajes(IFormFile ArchivoImportado, string Mensaje)
         {
             usuarioReceptor = obtainCookieUsuarios("UsuarioReceptor");
@@ -359,6 +362,7 @@ namespace vistas.Controllers
 
             return View();
         }
+
         [HttpPost]
         public ActionResult BusquedaM(string Mensaje)
         {
@@ -408,6 +412,7 @@ namespace vistas.Controllers
             ViewBag.Matriz = mensajs.ToArray();
             return View();
         }
+
         public ActionResult DescargarArchivos(string nombre)
         {
             usuarioReceptor = obtainCookieUsuarios("UsuarioReceptor");
@@ -418,7 +423,6 @@ namespace vistas.Controllers
             return View();
         }
 
-
         public void cookieUsuarios(string marca, string contenido)
         {
             HttpContext.Response.Cookies.Append(marca, contenido, new CookieOptions()
@@ -426,10 +430,12 @@ namespace vistas.Controllers
                 Expires = DateTime.Now.AddDays(5)
             });
         }
+
         public string obtainCookieUsuarios(string marca)
         {
             return HttpContext.Request.Cookies[marca];
         }
+
         public void tokenCookie(string value, [FromBody]Dictionary<string, string> objeto)
         {
             var buffer = value.PadRight(64, ' ')
@@ -454,10 +460,19 @@ namespace vistas.Controllers
                 Expires = DateTime.Now.AddDays(5)
             });
         }
+
         public bool validateCookie(string authToken)
         {
             string token = HttpContext.Request.Cookies["tokens"];
             return true;
+        }
+
+        public ActionResult LogOut()
+        {
+            usuarioEnControl = " ";
+            usuarioReceptor = " ";
+            //Borrar cookies
+            return RedirectToAction("Inicio");
         }
     }
 
