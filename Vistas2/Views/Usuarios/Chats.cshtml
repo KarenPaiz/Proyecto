@@ -11,15 +11,24 @@
     </tr>
     @foreach (var item in ViewBag.Matriz)
     {
-        <tr>
-            <td>@item.EmisorMsg :  @item.Mensaje -@item.NombreArchivo   -@item.FechaEnvio   </td>
-        </tr>
+        @if (item.EmisorMsg == ViewBag.Matriz[0].EmisorMsg)
+        {
+            <tr>
+                <td><font size3=><font color="Blue">@item.EmisorMsg:</font>  @item.Mensaje -@item.NombreArchivo   </font><font size=1>-@item.FechaEnvio</font></td>
+            </tr>
+        }
+        else
+        {
+            <tr>
+                <td><font size3=><font color="Lime">@item.EmisorMsg:</font>  @item.Mensaje -@item.NombreArchivo   </font><font size=1>-@item.FechaEnvio</font></td>
+            </tr>
+        }
     }
 </table>
 <h2></h2>
 
 <a href="/Usuarios/EnvioMensajes">
-    <input type="button" value="Enviar mensajes" />
+    <input type="button" value="Enviar mensajes" class="btn btn-default" />
 </a>
 
 <h2></h2>
@@ -42,5 +51,5 @@
 </div>
 
 <a href="/Usuarios/SalaDeChat">
-    <input type="button" value="Regresar a Sala de Chat" />
+    <input type="button" value="Regresar a Sala de Chat" class="btn btn-default"/>
 </a>

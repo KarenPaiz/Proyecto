@@ -3,18 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-//using Microsoft.AspNetCore.Http;
-//using Microsoft.AspNetCore.Mvc;
 using System.IO;
 using Vistas2.Models;
 using System.Net.Http;
-//using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-//using Microsoft.IdentityModel.Tokens;
 using System.Security.Principal;
 using System.Text;
 using System.Net.Http.Formatting;
 using System.Web.Script.Serialization;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Vistas2.Controllers
 {
@@ -37,89 +35,94 @@ namespace Vistas2.Controllers
         [HttpPost]
         public ActionResult IngresoU(HttpPostedFileBase collection, string Usuario, string Nombre, string Password)
         {
-            var nombreUsuario = Nombre;
-            var usuario = Usuario;
-            var contrasenia = string.Empty;
-            Random rnd = new Random();
-            int aNumber = rnd.Next(1, 100);
-            List<int> numbers = new List<int>();
-            if (System.IO.File.Exists(Server.MapPath(@"~\Numbers.txt")))
+            if (Usuario == null && Password == null)
             {
-                using (var lectura = new StreamReader(Server.MapPath(@"~\Numbers.txt")))
-                {
-                    string linea;
-                    while ((linea = lectura.ReadLine()) != null)
-                    {
-                        numbers.Add(Convert.ToInt16(lectura.ReadLine()));
-                    }
-                }
-                bool existe = false;
-                while (!existe)
-                {
-                    existe = true;
-                    foreach (var item in numbers)
-                    {
-                        if (item == aNumber)
-                        {
-                            existe = false;
-                        }
-                    }
-                    if (!existe)
-                    {
-                        aNumber = rnd.Next(1, 100);
-                    }
-                }
-            using (var escritura = System.IO.File.AppendText(Server.MapPath(@"~\Numbers.txt")))
-            {
-                escritura.WriteLine(aNumber);
-            }
+                return Json(new { status = "error", message = "error al ingresar datos" });
             }
             else
             {
-                using (var escritura = new StreamWriter(Server.MapPath(@"~\Numbers.txt")))
+                var nombreUsuario = Nombre;
+                var usuario = Usuario;
+                var contrasenia = string.Empty;
+                Random rnd = new Random();
+                int aNumber = rnd.Next(1, 100);
+                List<int> numbers = new List<int>();
+                if (System.IO.File.Exists(Server.MapPath(@"~\Numbers.txt")))
                 {
-                    escritura.WriteLine(aNumber);
-                }
-            }
-            var byteContrasenia = new List<byte>();
-            foreach (var item in Password)
-            {
-                byteContrasenia.Add(Convert.ToByte(Convert.ToChar(item)));
-            }
-            var numeroCifrar = Password.Length - 1 % aNumber;
-            byte[] contrasenia1 = Libreria.Metodos.EncryptionZigZag(byteContrasenia.ToArray(), numeroCifrar);
-
-            foreach (var item in contrasenia1)
-            {
-                contrasenia += Convert.ToChar(item).ToString();
-            }
-            var usuarioNuevo = new UsersModels();
-            usuarioNuevo.IDDH = aNumber;
-            usuarioNuevo.Nombre = Nombre;
-            usuarioNuevo.Password = contrasenia;
-            usuarioNuevo.Usuario = Usuario;
-
-            //ENVIAR DATOS A MAURICIO
-            //ENVIAR AL USUARIO A LA PAGINA DE INICIO
-            using (var client = new HttpClient())
-            {
-                client.BaseAddress = new Uri("http://localhost:59679");
-                HttpResponseMessage response = client.PostAsync("api/Chat/UserExists", Usuario, new JsonMediaTypeFormatter()).Result;
-                var postResult = response.Content.ReadAsStringAsync().Result;
-                JavaScriptSerializer JSserializer = new JavaScriptSerializer();
-                bool returnbool = JSserializer.Deserialize<bool>(postResult);
-                if (returnbool)
-                {
-                    HttpResponseMessage response2 = client.PostAsync("api/Chat/CreateUser", usuarioNuevo, new JsonMediaTypeFormatter()).Result;
-
-                    if (response2.IsSuccessStatusCode)
+                    using (var lectura = new StreamReader(Server.MapPath(@"~\Numbers.txt")))
                     {
-                        return RedirectToAction("Inicio");
+                        string linea;
+                        while ((linea = lectura.ReadLine()) != null)
+                        {
+                            numbers.Add(Convert.ToInt16(lectura.ReadLine()));
+                        }
+                    }
+                    bool existe = false;
+                    while (!existe)
+                    {
+                        existe = true;
+                        foreach (var item in numbers)
+                        {
+                            if (item == aNumber)
+                            {
+                                existe = false;
+                            }
+                        }
+                        if (!existe)
+                        {
+                            aNumber = rnd.Next(1, 100);
+                        }
+                    }
+                    using (var escritura = System.IO.File.AppendText(Server.MapPath(@"~\Numbers.txt")))
+                    {
+                        escritura.WriteLine(aNumber);
                     }
                 }
-                ModelState.AddModelError(string.Empty, "Error, usuario ya existente");
+                else
+                {
+                    using (var escritura = new StreamWriter(Server.MapPath(@"~\Numbers.txt")))
+                    {
+                        escritura.WriteLine(aNumber);
+                    }
+                }
+                var byteContrasenia = new List<byte>();
+                foreach (var item in Password)
+                {
+                    byteContrasenia.Add(Convert.ToByte(Convert.ToChar(item)));
+                }
+                var numeroCifrar = Password.Length - 1 % aNumber;
+                byte[] contrasenia1 = Libreria.Metodos.EncryptionZigZag(byteContrasenia.ToArray(), numeroCifrar);
+
+                foreach (var item in contrasenia1)
+                {
+                    contrasenia += Convert.ToChar(item).ToString();
+                }
+                var usuarioNuevo = new UsersModels();
+                usuarioNuevo.IDDH = aNumber;
+                usuarioNuevo.Nombre = Nombre;
+                usuarioNuevo.Password = contrasenia;
+                usuarioNuevo.Usuario = Usuario;
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri("http://localhost:59679");
+                    HttpResponseMessage response = client.PostAsync("api/Chat/UserExists", Usuario, new JsonMediaTypeFormatter()).Result;
+                    var postResult = response.Content.ReadAsStringAsync().Result;
+                    JavaScriptSerializer JSserializer = new JavaScriptSerializer();
+                    bool returnbool = JSserializer.Deserialize<bool>(postResult);
+                    if (returnbool)
+                    {
+                        HttpResponseMessage response2 = client.PostAsync("api/Chat/CreateUser", usuarioNuevo, new JsonMediaTypeFormatter()).Result;
+
+                        if (response2.IsSuccessStatusCode)
+                        {
+                            return RedirectToAction("Inicio");
+                        }
+                    }
+
+                    ModelState.AddModelError(string.Empty, "Error, usuario ya existente");
+                }
+                ModelState.AddModelError(string.Empty, "Error");
             }
-            ModelState.AddModelError(string.Empty, "Error");
             return View();
         }
 
@@ -217,17 +220,10 @@ namespace Vistas2.Controllers
         public ActionResult Chats(string Archivo)
         {
             Response.Cookies["UsuariosApp"]["UsuarioReceptor"] = usuarioReceptor;
-            Response.Cookies["UsuariosApp"]["UsuarioControl"] = usuarioEnControl;
-            //var tokenValido = validateCookie(usuarioEnControl);
-            //if (!tokenValido)
-            //{
-            //    //error
-            //    return RedirectToAction("Inicio");
-            //}
+            Response.Cookies["UsuariosApp"]["UsuarioControl"] = usuarioEnControl;            
             Directory.CreateDirectory("C:/App_Data/ArchivosDescargas/");
             if (Archivo != null)
             {
-                byte[] bytesArchivo;
                 byte[] aEscribir;
                 using (var client = new HttpClient())
                 {
@@ -424,7 +420,6 @@ namespace Vistas2.Controllers
         {
             usuarioEnControl = " ";
             usuarioReceptor = " ";
-            //Borrar cookies
             return RedirectToAction("Inicio");
         }
 
@@ -433,70 +428,53 @@ namespace Vistas2.Controllers
             Response.Cookies["UsuariosApp"]["UsuarioReceptor"] = usuarioReceptor;
             Response.Cookies["UsuariosApp"]["UsuarioControl"] = usuarioEnControl;
             var nombreArchivo = nombre;
-            //enivarlo
+
 
             return View();
         }
-        
-        //public string obtainCookieUsuarios(string marca)
-        //{
-        //    return HttpContext.Request.Cookies[marca];
-        //}
 
 
 
-        //public void tokenCookie(string value, [FromBody]Dictionary<string, string> objeto)
-        //{
-        //    var buffer = value.PadRight(64, ' ')
-        //       .ToCharArray()
-        //       .Select(x => Convert.ToByte(x))
-        //       .ToArray();
-        //    var hander = new JwtSecurityTokenHandler();
-        //    var claims = objeto.Select(x => new Claim(x.Key, x.Value.ToString()));
-        //    var description = new SecurityTokenDescriptor
-        //    {
-        //        Issuer = "todos",
-        //        Audience = "audiencia",
-        //        Expires = DateTime.UtcNow.AddSeconds(10),
-        //        Subject = new ClaimsIdentity(claims),
-        //        SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(buffer), SecurityAlgorithms.HmacSha256)
-        //    };
-        //    var token = hander.CreateToken(description);
-        //    var tokenstring = hander.WriteToken(token);
 
-        //    HttpContext.Response.Cookies.Append("tokens", tokenstring, new CookieOptions()
-        //    {
-        //        Expires = DateTime.Now.AddDays(5)
-        //    });
-        //}
 
-        //public bool validateCookie(string usuario)
-        //{
-        //    string token = HttpContext.Request.Cookies["tokens"];
-        //    return ValidateToken(token, usuario);
-        //}
 
-        //public bool ValidateToken(string authToken, string usuario)
-        //{
-        //    var tokenHandler = new JwtSecurityTokenHandler();
-        //    var validationParameters = GetValidationParameters(usuario);
-        //    SecurityToken validatedToken;
-        //    IPrincipal principal = tokenHandler.ValidateToken(authToken, validationParameters, out validatedToken);
-        //    return true;
-        //}
+        public string generandoToken( string objeto)
+        {
+            var buffer = key.PadRight(64, ' ')
+              .ToCharArray()
+              .Select(x => Convert.ToByte(x))
+              .ToArray();
+            var handler = new JwtSecurityTokenHandler();
+            var claims = objeto;
+            var header = new JwtHeader(new SigningCredentials(new SymmetricSecurityKey(buffer), SecurityAlgorithms.HmacSha256));
+            
+            var Sub = new Claim[1];
+            Sub[0] = new Claim("Usuario",objeto);
+            var Iss = "todos";
+            var Aud = "audiencia";
+            var date = DateTime.Now;
+            var Exp = DateTime.UtcNow.AddMinutes(5);
 
-        //public TokenValidationParameters GetValidationParameters(string texto)
-        //{
-        //    return new TokenValidationParameters()
-        //    {
-        //        ValidateLifetime = false, // Because there is no expiration in the generated token
-        //        ValidateAudience = false, // Because there is no audiance in the generated token
-        //        ValidateIssuer = false,   // Because there is no issuer in the generated token
-        //        ValidIssuer = "Usuario",
-        //        ValidAudience = texto,
-        //        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)) // The same key as the one that generate the token
-        //    };
-        //}
+
+            var body = new JwtPayload(Iss, Aud, Sub, date, Exp);
+
+            var description = new SecurityTokenDescriptor
+            {
+                Issuer = "todos",
+                Audience = "audiencia",
+                Expires = DateTime.UtcNow.AddMinutes(5),
+                Subject = new ClaimsIdentity(claims),
+                SigningCredentials = 
+            };
+            var token = handler.CreateToken(description);
+            var tokenstring = handler.WriteToken(token);
+            return tokenstring;
+        }
+        public bool validandoToken()
+        {
+            return true;
+        }
+
 
     }
 }
