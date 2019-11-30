@@ -22,6 +22,7 @@ namespace Vistas2.Controllers
         static string usuarioEnControl;
         static string usuarioReceptor;
         public static string key = "MauricioYSamanthaGanaranEsteCurso";
+        public static string token;
         public ActionResult Index()
         {
             return View();
@@ -146,6 +147,7 @@ namespace Vistas2.Controllers
                         usuarioEnControl = Usuario;
                         Response.Cookies["UsuariosApp"]["UsuarioControl"] = Usuario;
                         Response.Cookies["UsuariosApp"]["UsuarioReceptor"] = "";
+                        token = generandoToken(Usuario);
                         Response.Cookies["UsuariosApp"].Expires = DateTime.Now.AddDays(5);
                         return RedirectToAction("SalaDeChat");
                     }
@@ -446,17 +448,7 @@ namespace Vistas2.Controllers
               .ToArray();
             var handler = new JwtSecurityTokenHandler();
             var claims = objeto;
-            var header = new JwtHeader(new SigningCredentials(new SymmetricSecurityKey(buffer), SecurityAlgorithms.HmacSha256));
-            
-            var Sub = new Claim[1];
-            Sub[0] = new Claim("Usuario",objeto);
-            var Iss = "todos";
-            var Aud = "audiencia";
-            var date = DateTime.Now;
-            var Exp = DateTime.UtcNow.AddMinutes(5);
-
-
-            var body = new JwtPayload(Iss, Aud, Sub, date, Exp);
+           
 
             var description = new SecurityTokenDescriptor
             {
@@ -464,13 +456,14 @@ namespace Vistas2.Controllers
                 Audience = "audiencia",
                 Expires = DateTime.UtcNow.AddMinutes(5),
                 Subject = new ClaimsIdentity(claims),
-                SigningCredentials = 
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(buffer), SecurityAlgorithms.HmacSha256)
             };
+        
             var token = handler.CreateToken(description);
             var tokenstring = handler.WriteToken(token);
             return tokenstring;
         }
-        public bool validandoToken()
+        public bool validandoToken(string tokenAValidar)
         {
             return true;
         }
