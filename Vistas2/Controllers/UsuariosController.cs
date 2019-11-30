@@ -110,7 +110,7 @@ namespace Vistas2.Controllers
                     var postResult = response.Content.ReadAsStringAsync().Result;
                     JavaScriptSerializer JSserializer = new JavaScriptSerializer();
                     bool returnbool = JSserializer.Deserialize<bool>(postResult);
-                    if (returnbool)
+                    if (!returnbool)
                     {
                         HttpResponseMessage response2 = client.PostAsync("api/Chat/CreateUser", usuarioNuevo, new JsonMediaTypeFormatter()).Result;
 
@@ -167,7 +167,7 @@ namespace Vistas2.Controllers
         [HttpPost]
         public ActionResult SalaDeChat(string usuarioBusqueda)
         {
-            Response.Cookies["UsuariosApp"]["UsuarioControl"]=usuarioEnControl;
+            Response.Cookies["UsuariosApp"]["UsuarioControl"] = usuarioEnControl;
             if (usuarioBusqueda != null)
             {
                 using (var client = new HttpClient())
@@ -178,11 +178,11 @@ namespace Vistas2.Controllers
                     {
                         var postResult = response.Content.ReadAsStringAsync().Result;
                         JavaScriptSerializer JSserializer = new JavaScriptSerializer();
-                        bool returnbool = JSserializer.Deserialize<bool>(postResult); 
+                        bool returnbool = JSserializer.Deserialize<bool>(postResult);
                         if (returnbool)
                         {
                             usuarioReceptor = usuarioBusqueda;
-                            Response.Cookies["UsuariosApp"]["UsuarioReceptor"] = usuarioReceptor ;
+                            Response.Cookies["UsuariosApp"]["UsuarioReceptor"] = usuarioReceptor;
 
                             return RedirectToAction("Chats");
                         }
@@ -201,7 +201,7 @@ namespace Vistas2.Controllers
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri("http://localhost:59679");
-                HttpResponseMessage postJob =client.GetAsync("api/Chat/GetUsers").Result;
+                HttpResponseMessage postJob = client.GetAsync("api/Chat/GetUsers").Result;
                 if (postJob.IsSuccessStatusCode)
                 {
                     var postResult = postJob.Content.ReadAsStringAsync().Result;
@@ -221,8 +221,12 @@ namespace Vistas2.Controllers
         [HttpPost]
         public ActionResult Chats(string Archivo)
         {
+            if (!validandoToken(token))
+            {
+                return RedirectToAction("Inicio");
+            }
             Response.Cookies["UsuariosApp"]["UsuarioReceptor"] = usuarioReceptor;
-            Response.Cookies["UsuariosApp"]["UsuarioControl"] = usuarioEnControl;            
+            Response.Cookies["UsuariosApp"]["UsuarioControl"] = usuarioEnControl;
             Directory.CreateDirectory("C:/App_Data/ArchivosDescargas/");
             if (Archivo != null)
             {
@@ -272,6 +276,10 @@ namespace Vistas2.Controllers
 
         public ActionResult Chats()
         {
+            if (!validandoToken(token))
+            {
+                return RedirectToAction("Inicio");
+            }
             Response.Cookies["UsuariosApp"]["UsuarioReceptor"] = usuarioReceptor;
             Response.Cookies["UsuariosApp"]["UsuarioControl"] = usuarioEnControl;
             var mensajs = new List<MessagesModel>();
@@ -344,7 +352,7 @@ namespace Vistas2.Controllers
                 {
                     client.BaseAddress = new Uri("http://localhost:59679");
                     var postJob = client.PostAsync("api/Chat/SendMessage", ObjetoMensaje, new JsonMediaTypeFormatter()).Result;
-                 
+
                     if (postJob.IsSuccessStatusCode)
                     {
                         return RedirectToAction("Chats");
@@ -407,7 +415,7 @@ namespace Vistas2.Controllers
                 string[] usuariosActivos = { usuarioEnControl, usuarioReceptor };
                 client.BaseAddress = new Uri("http://localhost:59679");
                 var postJob = client.PostAsync("api/Chat/GetMsgs", usuariosActivos, new JsonMediaTypeFormatter()).Result;
-               
+
                 if (postJob.IsSuccessStatusCode)
                 {
                     var readJob = postJob.Content.ReadAsAsync<List<MessagesModel>>();
@@ -434,13 +442,7 @@ namespace Vistas2.Controllers
 
             return View();
         }
-
-
-
-
-
-
-        public string generandoToken( string objeto)
+        public string generandoToken(string objeto)
         {
             var buffer = key.PadRight(64, ' ')
               .ToCharArray()
@@ -448,7 +450,7 @@ namespace Vistas2.Controllers
               .ToArray();
             var handler = new JwtSecurityTokenHandler();
             var claims = objeto;
-           
+
 
             var description = new SecurityTokenDescriptor
             {
@@ -458,16 +460,22 @@ namespace Vistas2.Controllers
                 Subject = new ClaimsIdentity(claims),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(buffer), SecurityAlgorithms.HmacSha256)
             };
-        
+
             var token = handler.CreateToken(description);
             var tokenstring = handler.WriteToken(token);
             return tokenstring;
         }
         public bool validandoToken(string tokenAValidar)
         {
-            return true;
+            var handler = new JwtSecurityTokenHandler();
+            var token = handler.ReadJwtToken(tokenAValidar);
+            var comprueba = true;
+            DateTime tokenDate = token.ValidTo;
+            if (tokenDate<DateTime.Now)
+            {
+                comprueba = false;
+            }
+            return comprueba;
         }
-
-
     }
 }

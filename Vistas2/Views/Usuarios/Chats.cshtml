@@ -11,7 +11,7 @@
     </tr>
     @foreach (var item in ViewBag.Matriz)
     {
-        @if (item.EmisorMsg == ViewBag.Matriz[0].EmisorMsg)
+        if (item.EmisorMsg == ViewBag.Matriz[0].EmisorMsg)
         {
             <tr>
                 <td><font size3=><font color="Blue">@item.EmisorMsg:</font>  @item.Mensaje -@item.NombreArchivo   </font><font size=1>-@item.FechaEnvio</font></td>
