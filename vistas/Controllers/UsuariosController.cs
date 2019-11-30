@@ -25,8 +25,8 @@ namespace vistas.Controllers
         {
             return View();
         }
+
         [HttpPost]
-        //[ValidateAntiForgeryToken]
         public ActionResult IngresoU(IFormCollection collection, string Usuario, string Nombre, string Password)
         {
             var nombreUsuario = Nombre;
@@ -109,7 +109,6 @@ namespace vistas.Controllers
         }
 
         [HttpPost]
-        //[ValidateAntiForgeryToken]
         public ActionResult Inicio(IFormCollection collection, string Usuario, string Password)
         {
             string[] UsuarioPassword = { Usuario, Password };
@@ -124,11 +123,12 @@ namespace vistas.Controllers
                     var readJob = postResult.Content.ReadAsAsync<bool>();
                     readJob.Wait();
                     if (readJob.Result)
-                    {
+                    {                       
+
                         var diccionario = new Dictionary<string, string>();
                         diccionario.Add("Usuario", Usuario);
                         usuarioEnControl = Usuario;
-                        cookieUsuarios("UsuarioControl", Usuario);
+                        Response.Cookies.Append("UsuarioControl",Usuario);
                         return RedirectToAction("SalaDeChat");
                     }
                     return RedirectToAction("Inicio");
@@ -137,6 +137,7 @@ namespace vistas.Controllers
             ModelState.AddModelError(string.Empty, "Error");
             return View();
         }
+
         public ActionResult Inicio()
         {
 
@@ -146,7 +147,7 @@ namespace vistas.Controllers
         [HttpPost]
         public ActionResult SalaDeChat(string usuarioBusqueda)
         {
-            usuarioEnControl = obtainCookieUsuarios("UsuarioControl");
+            usuarioEnControl = Request.Cookies[usuarioEnControl];
             if (usuarioBusqueda != null)
             {
                 using (var client = new HttpClient())
@@ -161,8 +162,8 @@ namespace vistas.Controllers
                         readJob.Wait();
                         if (readJob.Result)
                         {
-                            cookieUsuarios("UsuarioReceptor", usuarioBusqueda);
                             usuarioReceptor = usuarioBusqueda;
+                            Response.Cookies.Append("UsuarioReceptor", usuarioReceptor);
 
                             return RedirectToAction("Chats");
                         }
@@ -172,9 +173,10 @@ namespace vistas.Controllers
             }
             return RedirectToAction("SalaDeChat");
         }
+
         public ActionResult SalaDeChat()
         {
-            usuarioEnControl = obtainCookieUsuarios("UsuarioControl");
+            usuarioEnControl = Request.Cookies["UsuarioControl"];
             usuarioReceptor = string.Empty;
             var usuarios = new List<UsersModels>();
             using (var client = new HttpClient())
@@ -201,9 +203,9 @@ namespace vistas.Controllers
         [HttpPost]
         public ActionResult Chats(string Archivo)
         {
-            
-            usuarioReceptor = obtainCookieUsuarios("UsuarioReceptor");
-            usuarioEnControl = obtainCookieUsuarios("UsuarioControl");
+
+            usuarioReceptor = Request.Cookies["UsuarioReceptor"];
+            usuarioEnControl = Request.Cookies["UsuarioControl"];
             var tokenValido = validateCookie(usuarioEnControl);
             //if (!tokenValido)
             //{
@@ -264,10 +266,11 @@ namespace vistas.Controllers
             ViewBag.Matriz = mensajs.ToArray();
             return View();
         }
+
         public ActionResult Chats()
         {
-            usuarioReceptor = obtainCookieUsuarios("UsuarioReceptor");
-            usuarioEnControl = obtainCookieUsuarios("UsuarioControl");
+            usuarioReceptor = Request.Cookies["UsuarioReceptor"];
+            usuarioEnControl = Request.Cookies["UsuarioControl"];
             var mensajs = new List<MessagesModel>();
             using (var client = new HttpClient())
             {
@@ -290,8 +293,9 @@ namespace vistas.Controllers
 
         public ActionResult EnvioMensajes(IFormFile ArchivoImportado, string Mensaje)
         {
-            usuarioReceptor = obtainCookieUsuarios("UsuarioReceptor");
-            usuarioEnControl = obtainCookieUsuarios("UsuarioControl");
+            usuarioReceptor = Request.Cookies["UsuarioReceptor"];
+            usuarioEnControl = Request.Cookies["UsuarioControl"];
+
             var ObjetoMensaje = new MessagesModel();
             if (Mensaje != null && ArchivoImportado != null)
             {
@@ -377,8 +381,8 @@ namespace vistas.Controllers
         [HttpPost]
         public ActionResult BusquedaM(string Mensaje)
         {
-            usuarioReceptor = obtainCookieUsuarios("UsuarioReceptor");
-            usuarioEnControl = obtainCookieUsuarios("UsuarioControl");
+            usuarioReceptor = Request.Cookies["UsuarioReceptor"];
+            usuarioEnControl = Request.Cookies["UsuarioControl"];
             string[] parameters = { usuarioEnControl, usuarioReceptor, Mensaje };
 
             var mensajs = new List<MessagesModel>();
@@ -402,8 +406,8 @@ namespace vistas.Controllers
         }
         public ActionResult BusquedaM()
         {
-            usuarioReceptor = obtainCookieUsuarios("UsuarioReceptor");
-            usuarioEnControl = obtainCookieUsuarios("UsuarioControl");
+            usuarioReceptor = HttpContext.Request.Cookies["UsuarioReceptor"];
+            usuarioEnControl = Request.Cookies["UsuarioControl"];
             var mensajs = new List<MessagesModel>();
 
             using (var client = new HttpClient())
@@ -439,14 +443,6 @@ namespace vistas.Controllers
             //enivarlo
 
             return View();
-        }
-
-        public void cookieUsuarios(string marca, string contenido)
-        {
-            HttpContext.Response.Cookies.Append(marca, contenido, new CookieOptions()
-            {
-                Expires = DateTime.Now.AddDays(5)
-            });
         }
 
         public string obtainCookieUsuarios(string marca)

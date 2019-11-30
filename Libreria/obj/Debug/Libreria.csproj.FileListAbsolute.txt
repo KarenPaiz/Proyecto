@@ -107,3 +107,5 @@ C:\Users\Allan Dávila\Documents\GitHub\Proyecto\Libreria\obj\Debug\Libreria.dll
 C:\Users\Allan Dávila\Documents\GitHub\Proyecto\Libreria\obj\Debug\Libreria.pdb
 C:\Users\Allan Dávila\Documents\GitHub\Proyecto\Libreria\bin\Debug\Libreria.dll
 C:\Users\Allan Dávila\Documents\GitHub\Proyecto\Libreria\bin\Debug\Libreria.pdb
+C:\Users\Allan Dávila\Documents\GitHub\Proyecto\Libreria\bin\Debug\System.Security.Claims.dll
+C:\Users\Allan Dávila\Documents\GitHub\Proyecto\Libreria\obj\Debug\Libreria.csproj.CopyComplete

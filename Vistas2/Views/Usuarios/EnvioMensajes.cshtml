@@ -1,0 +1,16 @@
+﻿
+@{
+    ViewBag.Title = "EnvioMensajes";
+}
+
+<h2>Envio de Mensajes</h2>
+
+<h2></h2>
+<div class="input-group">
+    @using (Html.BeginForm("EnvioMensajes", "Usuarios", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        <input type="text" name="Mensaje">
+        <input type="submit" value="Enviar" class="btn btn-default" />
+        <input type="file" name="ArchivoImportado" />
+    }
+</div>

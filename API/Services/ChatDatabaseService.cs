@@ -63,14 +63,7 @@ namespace API.Services
                     retornable.Add(item);
                 }
             }
-            //foreach (var item in retornable)
-            //{
-            //    if (item.ReceptorMsg==item.EmisorMsg)
-            //    {
-            //        retornable.Remove(item);
-            //    }
-            //}
-            retornable.Sort((a, b) => b.FechaEnvio.CompareTo(a.FechaEnvio));
+            retornable.Sort((a,b)=>a.FechaEnvio.CompareTo(b.FechaEnvio));
             return retornable;
         }
         //Insertar nuevo mensaje a la base de datos

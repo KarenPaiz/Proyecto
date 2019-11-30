@@ -63,7 +63,7 @@ namespace API.Controllers
         [Route("GetMsgsParam")]
         public ActionResult<List<MessagesModel>> GetMsgsParam(string[] parameters)
         {
-            var listaMensajes = _chatDatabaseService.GetMessagesParam(parameters[0],parameters[1],parameters[2]);
+            var listaMensajes = _chatDatabaseService.GetMessages(parameters[0],parameters[1]);
             foreach (var item in listaMensajes)
             {
                 var emisor = item.EmisorMsg;
@@ -85,7 +85,15 @@ namespace API.Controllers
                 }
                 item.Mensaje = mensajeGuardar;
             }
-            return Ok(listaMensajes);
+            var listaFiltrada = new List<MessagesModel>();
+            foreach (var item in listaMensajes)
+            {
+                if (item.Mensaje.Contains(parameters[2]))
+                {
+                    listaFiltrada.Add(item);
+                }
+            }
+            return Ok(listaFiltrada);
         }
 
         [Route("GetFile")]
@@ -159,6 +167,14 @@ namespace API.Controllers
         }
         [Route("ValidateUser")]
         public ActionResult<bool> ValidateUser([FromBody]string usuarioBusqueda)
+        {
+            var UserDB = _chatDatabaseService.ValidateUser(usuarioBusqueda);
+            var x = (UserDB != null) ? true : false;
+            return Ok(x);
+        }
+
+        [Route("UserExists")]
+        public ActionResult<bool> UserExists([FromBody]string usuarioBusqueda)
         {
             var UserDB = _chatDatabaseService.ValidateUser(usuarioBusqueda);
             var x = (UserDB != null) ? true : false;
